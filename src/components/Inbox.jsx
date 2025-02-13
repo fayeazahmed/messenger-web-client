@@ -51,11 +51,6 @@ const Inbox = () => {
 
     };
 
-    const onMessageReceived = message => {
-        console.log(message);
-
-    }
-
     const handleMessageInputChange = (e) => {
         if (e.key === "Enter" && e.target.value.trim()) {
             sendMessage();

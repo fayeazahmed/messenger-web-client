@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import apiClient from "../services/ApiClient";
+import { Link } from "react-router-dom";
 
 const Connect = ({ caller, user, connection }) => {
     const [btnDisabled, setBtnDisabled] = useState(false);
@@ -17,6 +18,7 @@ const Connect = ({ caller, user, connection }) => {
     };
 
     const getButton = () => {
+        let isChatButton = false;
         const connectIcon = <i className="fa fa-user-plus" aria-hidden="true"></i>;
         const requestedIcon = (
             <i className="fa fa-check-circle-o" aria-hidden="true"></i>
@@ -30,6 +32,7 @@ const Connect = ({ caller, user, connection }) => {
             (caller === "SEARCH" &&
                 connectionState?.status &&
                 connectionState.status !== "ACCEPTED");
+
         const text = disabled
             ? "Requested"
             : caller === "SEARCH"
@@ -39,15 +42,27 @@ const Connect = ({ caller, user, connection }) => {
                 : connectionState?.status && connectionState.status === "ACCEPTED"
                     ? "Chat"
                     : "Accept";
-        const icon = disabled
-            ? requestedIcon
-            : caller === "REQUESTS"
-                ? connectionState?.status && connectionState.status === "ACCEPTED"
-                    ? chatIcon
-                    : connectIcon
-                : connectionState
-                    ? chatIcon
-                    : connectIcon;
+
+        let icon;
+        if (disabled) {
+            icon = requestedIcon;
+        } else {
+            if (caller === "REQUESTS") {
+                if (connectionState?.status && connectionState.status === "ACCEPTED") {
+                    icon = chatIcon;
+                    isChatButton = true;
+                } else {
+                    icon = connectIcon;
+                }
+            } else {
+                if (connectionState) {
+                    icon = chatIcon;
+                    isChatButton = true;
+                } else {
+                    icon = connectIcon;
+                }
+            }
+        }
         const onClick =
             !disabled &&
             (connectionState
@@ -56,11 +71,23 @@ const Connect = ({ caller, user, connection }) => {
                     : null
                 : addConnection);
 
-        return (
+        return isChatButton ? (
+            <Link
+                to="/inbox"
+                state={{ connection: connectionState }}
+                className="btn btn-sm btn-outline-success"
+            >
+                {
+                    <>
+                        {text}&nbsp;{icon}
+                    </>
+                }
+            </Link>
+        ) : (
             <button
                 disabled={disabled}
                 onClick={onClick ? onClick : undefined}
-                className="btn btn-sm btn-outline-success "
+                className="btn btn-sm btn-outline-success"
             >
                 {
                     <>

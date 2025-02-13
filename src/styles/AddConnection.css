@@ -31,7 +31,8 @@
 	text-align: left;
 }
 
-.add-connection-user button {
+.add-connection-user button,
+.add-connection-user a {
 	width: 110px;
 }
 
