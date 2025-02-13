@@ -1,0 +1,13 @@
+.connection {
+	display: flex;
+	align-items: center;
+	font-size: 22px;
+	padding: 10px;
+	cursor: pointer;
+	text-decoration: none;
+	color: black;
+}
+
+.connection:hover {
+	background: var(--primary-color);
+}

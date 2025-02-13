@@ -1,0 +1,14 @@
+.welcome {
+	margin-top: 40%;
+}
+
+.welcome p {
+	font-family: "Miriam Libre";
+}
+
+.welcome-btns {
+	display: flex;
+	flex-direction: column;
+	width: 60%;
+	margin: auto;
+}

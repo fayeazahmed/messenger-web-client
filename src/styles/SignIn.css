@@ -1,0 +1,13 @@
+.signin-input {
+	padding: 2px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	text-align: left;
+	width: 100%;
+	font-size: 12px;
+	height: 37px;
+}
+
+.signin-input:focus-visible {
+	outline: 0;
+}

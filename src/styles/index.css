@@ -1,0 +1,40 @@
+* {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	box-sizing: border-box;
+}
+
+:root {
+	--bg-color: #2d2d2d;
+	--primary-color: #ebeb95;
+}
+
+.App {
+	height: 100vh;
+	position: relative;
+	background: var(--bg-color);
+}
+
+main {
+	background: var(--primary-color);
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: 9%;
+	width: 400px;
+	height: 680px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+	font-family: Arial, sans-serif;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+	flex-grow: 1;
+	background: white;
+	padding: 5px;
+}

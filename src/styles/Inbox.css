@@ -1,0 +1,38 @@
+.inbox {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.inbox-messages {
+	flex-grow: 1;
+}
+
+.inbox-input-container {
+	display: flex;
+	padding: 10px;
+	background-color: #fff;
+	border-top: 1px solid #ddd;
+}
+
+.inbox-input {
+	flex-grow: 1;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	margin-right: 10px;
+	text-align: left;
+}
+
+.inbox-input:focus-visible {
+	outline: 0;
+}
+
+.inbox-send-button {
+	background-color: var(--primary-color);
+	color: white;
+	padding: 10px 15px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
