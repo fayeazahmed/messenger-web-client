@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import apiClient from "../services/ApiClient"
 import "../styles/SignIn.css"
 import { Context } from '../services/Context'
@@ -8,8 +8,39 @@ import StompClient from "../services/StompClient"
 const SignIn = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const { setNotification, setUser, user, setStompClient, setNewMessages } = useContext(Context);
+    const { setNotification, setUser, user, setStompClient, setNewMessages, setConnections } = useContext(Context);
     const navigate = useNavigate();
+
+    const finishSignIn = useCallback((jwt, username, user) => {
+        apiClient.setAuthorizationHeader(jwt)
+        const stompClientInstance = new StompClient(
+            "http://localhost:8080/ws",
+            jwt,
+            username,
+            setNewMessages,
+            setConnections
+        )
+        stompClientInstance.connect()
+        setStompClient(stompClientInstance)
+        setUser(user)
+    }, [setNewMessages, setConnections, setStompClient, setUser])
+
+    const authenticateUser = useCallback(async () => {
+        const jwt = localStorage.getItem("jwt")
+        if (jwt) {
+            try {
+                const response = await apiClient.getUserFromJwt(jwt)
+                if (response) {
+                    finishSignIn(jwt, response.username, response)
+                } else {
+                    localStorage.removeItem("jwt")
+                }
+            } catch (ex) {
+                console.log(ex);
+                localStorage.removeItem("jwt")
+            }
+        }
+    }, [finishSignIn])
 
     useEffect(() => {
         if (user) {
@@ -17,27 +48,8 @@ const SignIn = () => {
         } else {
             authenticateUser()
         }
+    }, [user, navigate, authenticateUser])
 
-        async function authenticateUser() {
-            const jwt = localStorage.getItem("jwt")
-            if (jwt) {
-                try {
-                    const response = await apiClient.getUserFromJwt(jwt)
-                    if (response) {
-                        const stompClient = new StompClient("http://localhost:8080/ws", jwt, response.username, setNewMessages);
-                        stompClient.connect()
-                        setStompClient(stompClient)
-                        setUser(response)
-                    } else {
-                        localStorage.removeItem("jwt")
-                    }
-                } catch (ex) {
-                    console.log(ex);
-                    localStorage.removeItem("jwt")
-                }
-            }
-        }
-    }, [user, navigate, setUser, setNewMessages, setStompClient])
 
     const handleInputKeyDown = (key) => {
         if (key === "Enter" && username.trim() && password.trim()) {
@@ -50,11 +62,7 @@ const SignIn = () => {
             const response = await apiClient.signIn(username, password)
             const jwt = response?.jwtToken
             localStorage.setItem("jwt", jwt)
-            apiClient.setAuthorizationHeader(jwt)
-            const stompClient = new StompClient("http://localhost:8080/ws", jwt, response.username, setNewMessages);
-            stompClient.connect()
-            setStompClient(stompClient)
-            setUser(response)
+            finishSignIn(jwt, response.username, response)
         } catch (error) {
             console.log(error);
             setNotification(error.response?.data?.message || "Bad credentials probably")

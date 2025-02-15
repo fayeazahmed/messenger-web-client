@@ -2,12 +2,16 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 class StompClientHandler {
-    constructor(url, jwt, username, setNewMessages) {
+    constructor(url, jwt, username, setNewMessages, setConnections) {
         this.url = url;
         this.jwt = jwt
         this.username = username
         this.setNewMessages = setNewMessages;
         this.client = null;
+        this.setConnections = setConnections
+        this.handleReply = this.handleReply.bind(this);
+        this.handleOnlineNotification = this.handleOnlineNotification.bind(this);
+        this.handleOfflineNotification = this.handleOfflineNotification.bind(this);
     }
 
     connect() {
@@ -20,23 +24,54 @@ class StompClientHandler {
         this.client.activate();
     }
 
-    sendMessage(sender, recipient, text) {
-        this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender }))
+    sendMessage(sender, recipient, text, chatId) {
+        this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender, chatId }))
     }
 
     onConnected = (frame) => {
-        this.client.subscribe(`/user/queue/reply`, message => {
-            console.log(message);
-            let newMessage = JSON.parse(message.body)
-            console.log("Incoming private message:");
-            console.log(newMessage);
-            newMessage = {
-                ...newMessage,
-                isSender: false,
-                isNotified: false
+        this.client.subscribe(`/user/queue/reply`, this.handleReply)
+        this.client.subscribe(`/user/queue/user-online`, this.handleOnlineNotification)
+        this.client.subscribe(`/user/queue/user-offline`, this.handleOfflineNotification)
+    }
+
+    handleReply(message) {
+        let newMessage = JSON.parse(message.body)
+        console.log("Incoming private message:");
+        console.log(newMessage);
+        newMessage = {
+            ...newMessage,
+            isSender: false,
+            isNotified: false
+        }
+        this.setNewMessages(messages => [...messages, newMessage])
+    }
+
+    handleOnlineNotification(message) {
+        console.log("Online user:");
+        console.log(message.body);
+        const username = message.body
+
+        this.setConnections(connections => connections.map(connection => {
+            if (connection.receiver.username === username || connection.sender.username === username) {
+                return { ...connection, isOnline: true };
             }
-            this.setNewMessages(messages => [...messages, newMessage])
+            return connection;
         })
+        );
+    }
+
+    handleOfflineNotification(message) {
+        console.log("Offline user:");
+        console.log(message.body);
+        const username = message.body
+
+        this.setConnections(connections => connections.map(connection => {
+            if (connection.receiver.username === username || connection.sender.username === username) {
+                return { ...connection, isOnline: false };
+            }
+            return connection;
+        })
+        );
     }
 
     onError = error => {

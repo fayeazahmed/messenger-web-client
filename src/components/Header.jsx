@@ -1,28 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom';
 import "../styles/Header.css"
 import { Context } from "../services/Context";
 import apiClient from "../services/ApiClient"
 
-const ChatHeader = () => {
-    const [headerText, setHeaderText] = useState("")
-    const location = useLocation();
-    const { user, setUser, stompClient } = useContext(Context);
+const Header = () => {
+    const { user, setUser, stompClient, headerText } = useContext(Context);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        switch (location.pathname) {
-            case "/connections":
-                setHeaderText("Connections")
-                break;
-            case "/inbox":
-                setHeaderText("Inbox")
-                break;
-            default:
-                setHeaderText("Home")
-                break;
-        }
-    }, [setHeaderText, location.pathname])
 
     const signout = () => {
         apiClient.removeAuthorizationHeader()
@@ -47,4 +31,4 @@ const ChatHeader = () => {
     )
 }
 
-export default ChatHeader
+export default Header

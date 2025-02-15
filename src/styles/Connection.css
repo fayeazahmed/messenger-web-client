@@ -11,3 +11,9 @@
 .connection:hover {
 	background: var(--primary-color);
 }
+
+.chat-online {
+	color: green;
+	font-size: 13px;
+	margin-left: 3px;
+}

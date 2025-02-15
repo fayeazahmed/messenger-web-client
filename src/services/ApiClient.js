@@ -62,6 +62,12 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async getMessages(chatId) {
+        const response = await this.client.get(`/message/${chatId}`)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');

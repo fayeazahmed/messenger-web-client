@@ -20,6 +20,9 @@ const Connection = ({ connection }) => {
                 <i className="fa fa-user-circle-o" aria-hidden="true"></i>
             </div>
             <div className="chat-title">{title}</div>
+            {
+                connection?.isOnline && <div className="chat-online"><i className="fa fa-circle" aria-hidden="true"></i></div>
+            }
         </Link>
     );
 };
