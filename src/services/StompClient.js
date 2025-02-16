@@ -9,7 +9,7 @@ class StompClientHandler {
         this.setNewMessages = setNewMessages;
         this.client = null;
         this.setConnections = setConnections
-        this.handleReply = this.handleReply.bind(this);
+        this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
         this.handleOnlineNotification = this.handleOnlineNotification.bind(this);
         this.handleOfflineNotification = this.handleOfflineNotification.bind(this);
     }
@@ -29,12 +29,12 @@ class StompClientHandler {
     }
 
     onConnected = (frame) => {
-        this.client.subscribe(`/user/queue/reply`, this.handleReply)
+        this.client.subscribe(`/user/queue/reply`, this.handleIncomingMessage)
         this.client.subscribe(`/user/queue/user-online`, this.handleOnlineNotification)
         this.client.subscribe(`/user/queue/user-offline`, this.handleOfflineNotification)
     }
 
-    handleReply(message) {
+    handleIncomingMessage(message) {
         let newMessage = JSON.parse(message.body)
         console.log("Incoming private message:");
         console.log(newMessage);

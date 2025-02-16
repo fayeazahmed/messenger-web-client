@@ -11,14 +11,12 @@ const Connections = () => {
 
     const getConnections = useCallback(async () => {
         const connectionListResponse = await apiClient.getConnections()
-        const existingIds = new Set(connections.map(conn => conn.id))
+        const connections = connectionListResponse.map(item => ({
+            ...item.connection,
+            isOnline: item.online
+        }));
 
-        const updatedConnections = [
-            ...connections.filter(conn => existingIds.has(conn.id)),
-            ...connectionListResponse.filter(conn => !existingIds.has(conn.id))
-        ]
-
-        setConnections(updatedConnections)
+        setConnections(connections)
         // eslint-disable-next-line
     }, [])
 
