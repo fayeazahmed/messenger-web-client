@@ -44,12 +44,13 @@ const Inbox = () => {
         if (!user) {
             navigate("/");
         } else if (state?.connectionId) {
+            console.log(connections);
             const selectedConnection = connections.find(conn => conn.id === state.connectionId);
             setSelectedConnection(selectedConnection);
             const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
             setRecipient(recipient)
         }
-    }, [connections, state?.connectionId, user, navigate, setRecipient])
+    }, [connections, state, state?.connectionId, user, navigate, setRecipient])
 
     useEffect(() => {
         if (selectedConnection) {

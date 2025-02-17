@@ -20,7 +20,7 @@ const Header = () => {
     return (
         <div className="chat-header">
             <div className="chat-header-text">
-                <h2 className="text-start">AllIN1</h2>
+                <h2 className="text-start logo" onClick={() => navigate("/")}>AllIN1</h2>
                 <h6 className="text-start">{headerText}</h6>
             </div>
             <div className="chat-header-menu">

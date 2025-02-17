@@ -20,7 +20,7 @@ const Notification = () => {
             {notifications.map((notification, index) => {
                 return <Link
                     to="/inbox"
-                    state={{ connection: notification.connection }}
+                    state={{ connectionId: notification.connectionId }}
                     key={index}
                     className="notification fade-out"
                     style={{ animationDelay: `${index * 0.5}s` }}

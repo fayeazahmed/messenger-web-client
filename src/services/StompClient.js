@@ -47,7 +47,7 @@ class StompClientHandler {
         this.setNotifications(prev => [...prev,
         {
             message: `@${newMessage.sender}: ${newMessage.text}`,
-            connection: newMessage.connection
+            connectionId: newMessage.connection.id
         }
         ])
         this.setNewMessages(messages => [...messages, newMessage])

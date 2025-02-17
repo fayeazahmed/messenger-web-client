@@ -19,3 +19,7 @@
 	justify-content: space-between;
 	min-height: 83px;
 }
+
+.chat-header .logo {
+	cursor: pointer;
+}

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import apiClient from "../services/ApiClient";
 import { Link } from "react-router-dom";
+import { Context } from "../services/Context";
 
-const Connect = ({ caller, user, connection }) => {
+const Connect = ({ caller, user, connection: connectionFromProps }) => {
     const [btnDisabled, setBtnDisabled] = useState(false);
-    const [connectionState, setConnectionState] = useState(connection);
+    const [connectionState, setConnectionState] = useState(connectionFromProps);
+    const { setConnections } = useContext(Context);
 
     const addConnection = async () => {
         setBtnDisabled(true);
@@ -13,8 +15,15 @@ const Connect = ({ caller, user, connection }) => {
     };
 
     const acceptConnection = async () => {
-        const connectionResponse = await apiClient.acceptConnection(connection?.id);
-        setConnectionState(connectionResponse);
+        const connectionResponse = await apiClient.acceptConnection(connectionFromProps?.id);
+        const { connection, online, ...rest } = connectionResponse;
+        const connectionFlattened = {
+            ...connection,
+            isOnline: online,
+            ...rest
+        }
+        setConnectionState(connectionFlattened);
+        setConnections(prev => [...prev, connectionFlattened])
     };
 
     const getButton = () => {
@@ -74,7 +83,7 @@ const Connect = ({ caller, user, connection }) => {
         return isChatButton ? (
             <Link
                 to="/inbox"
-                state={{ connection: connectionState }}
+                state={{ connectionId: connectionState.id }}
                 className="btn btn-sm btn-outline-success"
             >
                 {
