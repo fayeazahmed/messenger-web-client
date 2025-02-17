@@ -1,25 +1,36 @@
 import React, { useContext, useEffect } from "react";
 import "../styles/Notification.css";
 import { Context } from "../services/Context";
+import { Link } from "react-router-dom";
 
 const Notification = () => {
-    const { notification, setNotification } = useContext(Context);
+    const { notifications, setNotifications } = useContext(Context);
 
     useEffect(() => {
-        if (notification !== "") {
-            const timer = setTimeout(() => {
-                setNotification("");
-            }, 2000);
+        const interval = setInterval(() => {
+            if (notifications.length > 0) {
+                setNotifications(prev => prev.slice(1));
+            }
+        }, 4000);
 
-            return () => clearTimeout(timer);
-        }
-    }, [notification, setNotification]);
-
+        return () => clearInterval(interval);
+    }, [notifications, setNotifications]);
     return (
-        <div className={`notification ${notification === "" ? "notification-closed" : ""}`}>
-            <p className="notification-content">{notification}</p>
+        <div className="notifications">
+            {notifications.map((notification, index) => {
+                return <Link
+                    to="/inbox"
+                    state={{ connection: notification.connection }}
+                    key={index}
+                    className="notification fade-out"
+                    style={{ animationDelay: `${index * 0.5}s` }}
+                >
+                    {notification.message}
+                </Link>
+            })}
         </div>
     );
 };
+
 
 export default Notification;

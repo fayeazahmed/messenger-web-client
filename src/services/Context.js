@@ -4,7 +4,7 @@ const Context = createContext();
 
 function Provider({ children }) {
     const [user, setUser] = useState(null);
-    const [notification, setNotification] = useState("");
+    const [notifications, setNotifications] = useState([]);
     const [stompClient, setStompClient] = useState(null);
     const [newMessages, setNewMessages] = useState([]);
     const [connections, setConnections] = useState([]);
@@ -15,8 +15,8 @@ function Provider({ children }) {
             value={{
                 user,
                 setUser,
-                notification,
-                setNotification,
+                notifications,
+                setNotifications,
                 stompClient,
                 setStompClient,
                 newMessages,

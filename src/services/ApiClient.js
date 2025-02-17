@@ -68,6 +68,12 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async getConnection(connectionId) {
+        const response = await this.client.get(`/connection/${connectionId}`)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');

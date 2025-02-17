@@ -1,11 +1,10 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import "../styles/Header.css"
 import { Context } from "../services/Context";
 import apiClient from "../services/ApiClient"
 
 const Header = () => {
-    const { user, setUser, stompClient, headerText } = useContext(Context);
+    const { user, setUser, stompClient, headerText, setHeaderText, setConnections } = useContext(Context);
     const navigate = useNavigate();
 
     const signout = () => {
@@ -14,6 +13,8 @@ const Header = () => {
         stompClient.disconnect()
         navigate("/");
         setUser(null)
+        setHeaderText("")
+        setConnections([])
     }
 
     return (

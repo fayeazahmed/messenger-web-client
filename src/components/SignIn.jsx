@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 import StompClient from "../services/StompClient"
 
 const SignIn = () => {
+    const [loading, setLoading] = useState(false)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const { setNotification, setUser, user, setStompClient, setNewMessages, setConnections } = useContext(Context);
+    const [errMessage, setErrMessage] = useState("")
+    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications } = useContext(Context);
     const navigate = useNavigate();
 
     const finishSignIn = useCallback((jwt, username, user) => {
@@ -17,13 +19,14 @@ const SignIn = () => {
             "http://localhost:8080/ws",
             jwt,
             username,
+            setNotifications,
             setNewMessages,
             setConnections
         )
         stompClientInstance.connect()
         setStompClient(stompClientInstance)
         setUser(user)
-    }, [setNewMessages, setConnections, setStompClient, setUser])
+    }, [setNewMessages, setConnections, setStompClient, setUser, setNotifications])
 
     const authenticateUser = useCallback(async () => {
         const jwt = localStorage.getItem("jwt")
@@ -59,13 +62,17 @@ const SignIn = () => {
 
     const signIn = async () => {
         try {
+            setLoading(true)
+            setErrMessage("")
             const response = await apiClient.signIn(username, password)
             const jwt = response?.jwtToken
             localStorage.setItem("jwt", jwt)
             finishSignIn(jwt, response.username, response)
         } catch (error) {
             console.log(error);
-            setNotification(error.response?.data?.message || "Bad credentials probably")
+            setErrMessage(error.response?.data?.message || error.message)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -87,9 +94,10 @@ const SignIn = () => {
                 type="password"
                 className="signin-input"
             />
-            <button onClick={signIn} className="w-100 btn btn-sm btn-success mt-2">
-                Signin
+            <button disabled={loading} onClick={signIn} className="w-100 btn btn-sm btn-success mt-2">
+                {loading ? <i className="fa fa-circle-o-notch" aria-hidden="true"></i> : "Signin"}
             </button>
+            <div className="signin-error">{errMessage}</div>
         </div>
     )
 }

@@ -1,23 +1,46 @@
-.notification {
+.notifications {
 	position: absolute;
-	width: 200px;
-	background: var(--bg-color);
-	left: 0;
+	height: 63px;
+	width: 400px;
+	left: 50%;
+	transform: translateX(-50%);
 	color: white;
-	padding: 6px 2px;
-	border-radius: 5px;
-	box-shadow: 2px 3px 5px 0px var(--primary-color);
-	top: 62px;
-	transition: left 0.3s;
+	top: 0;
+	overflow-y: hidden;
 }
 
-.notification-content {
+.notification {
+	display: block;
+	color: white;
+	cursor: pointer;
 	font-size: 14px;
 	margin: 0;
 	text-align: left;
 	padding-left: 6px;
+	opacity: 1;
+	transition: opacity 3s ease-out, transform 3s ease-out;
 }
 
-.notification-closed {
-	left: -200px;
+.notification:hover {
+	background-color: var(--primary-color);
+	color: black;
+}
+
+.notification.fade-out {
+	animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	80% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-20%);
+	}
 }

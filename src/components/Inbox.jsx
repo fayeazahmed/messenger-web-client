@@ -1,32 +1,33 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import Message from './Message';
-import { useLocation } from 'react-router-dom';
 import "../styles/Inbox.css";
 import { Context } from "../services/Context";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
 
 const Inbox = () => {
-    const location = useLocation();
-    const connection = location.state?.connection;
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState("");
-    const { user, stompClient, newMessages, setNewMessages, setHeaderText } = useContext(Context);
+    const [selectedConnection, setSelectedConnection] = useState(null);
+    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
+    const { state } = useLocation();
 
     const getMessages = useCallback(async () => {
-        const messageList = await apiClient.getMessages(connection.chat.id);
-        const messages = messageList.map(message => {
-            message.isSender = message.sender.username === user.username;
-            return message;
-        });
-        setMessages(messages);
-    }, [connection.chat.id, user.username]);
+        if (selectedConnection) {
+            const messageList = await apiClient.getMessages(selectedConnection.chat.id);
+            const messages = messageList.map(message => {
+                message.isSender = message.sender.username === user.username;
+                return message;
+            });
+            setMessages(messages);
+        }
+    }, [selectedConnection, user]);
 
     useEffect(() => {
-        getMessages()
-    }, [getMessages])
+        if (user) getMessages()
+    }, [getMessages, user])
 
     useEffect(() => {
         let newMessageList = []
@@ -42,13 +43,22 @@ const Inbox = () => {
     useEffect(() => {
         if (!user) {
             navigate("/");
-        } else if (connection) {
-            const recipient = connection.sender.username === user.username ? connection.receiver.username : connection.sender.username
+        } else if (state?.connectionId) {
+            const selectedConnection = connections.find(conn => conn.id === state.connectionId);
+            setSelectedConnection(selectedConnection);
+            const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
             setRecipient(recipient)
+        }
+    }, [connections, state?.connectionId, user, navigate, setRecipient])
+
+    useEffect(() => {
+        if (selectedConnection) {
+            console.log(selectedConnection.isOnline);
+
             setHeaderText(
                 <>
                     Inbox • {recipient}
-                    {connection.isOnline && (
+                    {selectedConnection.isOnline && (
                         <span className="chat-online">
                             <i className="fa fa-circle" aria-hidden="true"></i>
                         </span>
@@ -56,11 +66,11 @@ const Inbox = () => {
                 </>
             );
         }
-    }, [connection, user, navigate, setRecipient, setHeaderText])
+    }, [selectedConnection, setHeaderText, recipient])
 
     const sendMessage = () => {
         if (messageInput.trim()) {
-            stompClient.sendMessage(user.username, recipient, messageInput, connection.chat.id);
+            stompClient.sendMessage(user.username, recipient, messageInput, selectedConnection);
             const newMessage = {
                 text: messageInput,
                 recipient,

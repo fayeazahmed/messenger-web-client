@@ -13,9 +13,9 @@ function App() {
     <Provider>
       <Router>
         <div className="App">
+          <Notification />
           <main>
             <Header />
-            <Notification />
             <div className="main-content">
               <Routes>
                 <Route path="/connections" element={<Connections />} />

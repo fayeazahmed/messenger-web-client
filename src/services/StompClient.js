@@ -2,10 +2,11 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 class StompClientHandler {
-    constructor(url, jwt, username, setNewMessages, setConnections) {
+    constructor(url, jwt, username, setNotifications, setNewMessages, setConnections) {
         this.url = url;
         this.jwt = jwt
         this.username = username
+        this.setNotifications = setNotifications
         this.setNewMessages = setNewMessages;
         this.client = null;
         this.setConnections = setConnections
@@ -24,8 +25,8 @@ class StompClientHandler {
         this.client.activate();
     }
 
-    sendMessage(sender, recipient, text, chatId) {
-        this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender, chatId }))
+    sendMessage(sender, recipient, text, connection) {
+        this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender, connection }))
     }
 
     onConnected = (frame) => {
@@ -43,6 +44,12 @@ class StompClientHandler {
             isSender: false,
             isNotified: false
         }
+        this.setNotifications(prev => [...prev,
+        {
+            message: `@${newMessage.sender}: ${newMessage.text}`,
+            connection: newMessage.connection
+        }
+        ])
         this.setNewMessages(messages => [...messages, newMessage])
     }
 
