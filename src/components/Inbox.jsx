@@ -4,7 +4,7 @@ import "../styles/Inbox.css";
 import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
-import { groupMessages, getTimeFromTimestamp } from '../utils/dateUtils.js';
+import { groupMessages } from '../utils/dateUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
@@ -94,7 +94,7 @@ const Inbox = () => {
                 sender: user.username,
                 isNotified: false,
                 isSender: true,
-                createdAt: getTimeFromTimestamp(Date.now())
+                createdAt: Date.now()
             }
             setNewMessages((prevMessages) => [
                 ...prevMessages, newMessage
@@ -104,7 +104,7 @@ const Inbox = () => {
     };
 
     const handleMessageInputChange = (e) => {
-        if (e.key === "Enter" && e.target.value.trim()) {
+        if (e.key === "Enter" && !e.shiftKey && e.target.value.trim()) {
             sendMessage();
         }
     };
@@ -124,7 +124,7 @@ const Inbox = () => {
                 }
             </div>
             <div className="inbox-input-container">
-                <input
+                <textarea
                     type="text"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
