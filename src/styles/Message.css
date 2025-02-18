@@ -20,17 +20,17 @@
 	margin-right: auto;
 }
 
-.chat-sender {
+.chat-timestamp {
 	font-size: 11px;
 	margin: 0;
 }
 
-.chat-sender-sent {
+.chat-timestamp-sent {
 	text-align: right;
 	font-size: 11px;
 	margin: 0;
 }
 
-.chat-sender-received {
+.chat-timestamp-received {
 	text-align: left;
 }

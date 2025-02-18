@@ -1,11 +1,10 @@
 import "../styles/Message.css";
+import { getTimeFromTimestamp } from "../utils/dateUtils.js";
 
 const Message = ({ message, isSender }) => {
-    const sender = message.sender.username ? message.sender.username : message.sender
-
     return (
         <div>
-            <p className={`chat-sender ${isSender ? "chat-sender-sent" : "chat-sender-received"}`}>{sender}</p>
+            <p className={`chat-timestamp ${isSender ? "chat-timestamp-sent" : "chat-timestamp-received"}`}>{getTimeFromTimestamp(message.createdAt)}</p>
             <p className={`chat-message ${isSender ? "chat-message-sent" : "chat-message-received"}`}>{message.text}</p>
         </div>
     );

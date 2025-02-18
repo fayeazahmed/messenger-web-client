@@ -6,6 +6,8 @@
 
 .inbox-messages {
 	flex-grow: 1;
+	max-height: 525px;
+	overflow-y: scroll;
 }
 
 .inbox-input-container {
@@ -35,4 +37,11 @@
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
+}
+
+.inbox-messages-date {
+	margin: 0;
+	font-size: 10px;
+	font-family: monospace;
+	font-weight: bolder;
 }

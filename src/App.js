@@ -2,7 +2,6 @@ import React from "react";
 import Header from "./components/Header";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
-import Footer from "./components/Footer";
 import Inbox from "./components/Inbox";
 import { Provider } from "./services/Context";
 import Notification from "./components/Notification";
@@ -23,7 +22,6 @@ function App() {
                 <Route path="*" element={<Home />} />
               </Routes>
             </div>
-            <Footer />
           </main>
         </div>
       </Router>
