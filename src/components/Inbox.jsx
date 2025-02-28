@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import Message from './Message';
 import "../styles/Inbox.css";
 import { Context } from "../services/Context";
@@ -14,6 +14,7 @@ const Inbox = () => {
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
     const { state } = useLocation();
+    const messagesContainerRef = useRef(null);
 
     const getMessages = useCallback(async () => {
         if (selectedConnection) {
@@ -24,14 +25,31 @@ const Inbox = () => {
             });
             const groupedMessages = groupMessages(messages)
             setGroupedMessages(groupedMessages);
+            const msgContainer = messagesContainerRef.current;
+            if (msgContainer) {
+                setTimeout(() => {
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                }, 0);
+            }
         }
     }, [selectedConnection, user]);
+
+    const scrollToBottom = () => {
+        if (Object.entries(groupedMessages).length > 0) {
+            const msgContainer = messagesContainerRef.current;
+            if (msgContainer) {
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+            }
+        }
+    }
+
+    useEffect(scrollToBottom, [groupedMessages])
 
     useEffect(() => {
         if (user) getMessages()
     }, [getMessages, user])
 
-    useEffect(() => {
+    const renderNewMessage = () => {
         let newMessageList = [];
         for (let i = 0; i < newMessages.length; i++) {
             if (!newMessages[i].isNotified && (newMessages[i].isSender || newMessages[i].sender === recipient)) {
@@ -57,9 +75,11 @@ const Inbox = () => {
                 return combinedGroupedMessages;
             });
         }
-    }, [newMessages, recipient]);
+    }
 
-    useEffect(() => {
+    useEffect(renderNewMessage, [newMessages, recipient]);
+
+    const updateConnection = () => {
         if (!user) {
             navigate("/");
         } else if (state?.connectionId) {
@@ -67,11 +87,6 @@ const Inbox = () => {
             setSelectedConnection(selectedConnection);
             const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
             setRecipient(recipient)
-        }
-    }, [connections, state, state?.connectionId, user, navigate, setRecipient])
-
-    useEffect(() => {
-        if (selectedConnection) {
             setHeaderText(
                 <>
                     Inbox • {recipient}
@@ -83,7 +98,9 @@ const Inbox = () => {
                 </>
             );
         }
-    }, [selectedConnection, setHeaderText, recipient])
+    }
+
+    useEffect(updateConnection, [connections, state, state?.connectionId, user, navigate, setRecipient, setHeaderText])
 
     const sendMessage = () => {
         if (messageInput.trim()) {
@@ -106,12 +123,13 @@ const Inbox = () => {
     const handleMessageInputChange = (e) => {
         if (e.key === "Enter" && !e.shiftKey && e.target.value.trim()) {
             sendMessage();
+            e.preventDefault()
         }
     };
 
     return (
         <div className="inbox">
-            <div className="inbox-messages">
+            <div ref={messagesContainerRef} className="inbox-messages">
                 {
                     Object.keys(groupedMessages).map(date => (
                         <div key={date} className="inbox-messages-group-date">

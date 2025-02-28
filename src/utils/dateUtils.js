@@ -4,7 +4,7 @@ function groupMessages(messages) {
 
     messages.forEach(message => {
         // Extract date from timestamp (e.g., '2025-02-17')
-        const date = new Date(message.createdAt);
+        const date = message.createdAt ? new Date(message.createdAt) : new Date()
 
         // Format the date as "Day Month, Year" (e.g., "17 February, 2025")
         const formattedDate = date.toLocaleDateString('en-US', {
@@ -26,7 +26,7 @@ function groupMessages(messages) {
 }
 
 function getTimeFromTimestamp(timestamp) {
-    const dateObj = new Date(timestamp);
+    const dateObj = timestamp ? new Date(timestamp) : new Date();
 
     let time = dateObj.toLocaleTimeString('en-US', {
         hour: 'numeric',
