@@ -37,4 +37,17 @@ function getTimeFromTimestamp(timestamp) {
     return time.toLowerCase().replace(' ', '');
 }
 
-export { groupMessages, getTimeFromTimestamp }
+function getLastOnlineAt(lastOnlineAt) {
+    const lastOnlineDate = new Date(lastOnlineAt);
+    const now = new Date();
+    const diffMs = now - lastOnlineDate;
+    const minutes = Math.floor(diffMs / (1000 * 60)) % 60;
+    const hours = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (days > 0) return `${days}d`
+    if (hours > 0) return `${hours}h`
+    return `${minutes}m`
+}
+
+export { groupMessages, getTimeFromTimestamp, getLastOnlineAt }

@@ -4,7 +4,7 @@ import "../styles/Inbox.css";
 import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
-import { groupMessages } from '../utils/dateUtils.js';
+import { getLastOnlineAt, groupMessages } from '../utils/dateUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
@@ -87,14 +87,22 @@ const Inbox = () => {
             setSelectedConnection(selectedConnection);
             const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
             setRecipient(recipient)
+            let lastSeen = ""
+            if (!selectedConnection.isOnline) {
+                const lastOnlineAt =
+                    selectedConnection.sender.username === user.username
+                        ? selectedConnection.receiver.lastOnlineAt
+                        : selectedConnection.sender.lastOnlineAt;
+                lastSeen = getLastOnlineAt(lastOnlineAt)
+            }
             setHeaderText(
                 <>
                     Inbox • {recipient}
-                    {selectedConnection.isOnline && (
+                    {selectedConnection.isOnline ? (
                         <span className="chat-online">
                             <i className="fa fa-circle" aria-hidden="true"></i>
                         </span>
-                    )}
+                    ) : <span className="chat-online">{lastSeen}</span>}
                 </>
             );
         }

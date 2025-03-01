@@ -74,7 +74,18 @@ class StompClientHandler {
 
         this.setConnections(connections => connections.map(connection => {
             if (connection.receiver.username === username || connection.sender.username === username) {
-                return { ...connection, isOnline: false };
+                return {
+                    ...connection,
+                    isOnline: false,
+                    receiver: {
+                        ...connection.receiver,
+                        lastOnlineAt: new Date().toISOString()
+                    },
+                    sender: {
+                        ...connection.sender,
+                        lastOnlineAt: new Date()
+                    }
+                };
             }
             return connection;
         })

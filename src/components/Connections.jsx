@@ -17,8 +17,7 @@ const Connections = () => {
         }));
 
         setConnections(connections)
-        // eslint-disable-next-line
-    }, [])
+    }, [setConnections])
 
     useEffect(() => {
         if (!user) {
