@@ -4,6 +4,7 @@ import { Context } from "../services/Context";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
 import AddConnection from './AddConnection';
+import { modifyConnectionListResponse } from '../utils/connectionUtils';
 
 const Connections = () => {
     const { user, setHeaderText, connections, setConnections } = useContext(Context);
@@ -11,11 +12,7 @@ const Connections = () => {
 
     const getConnections = useCallback(async () => {
         const connectionListResponse = await apiClient.getConnections()
-        const connections = connectionListResponse.map(item => ({
-            ...item.connection,
-            isOnline: item.online
-        }));
-
+        const connections = modifyConnectionListResponse(connectionListResponse)
         setConnections(connections)
     }, [setConnections])
 

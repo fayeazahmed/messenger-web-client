@@ -53,3 +53,7 @@
 	font-family: monospace;
 	font-weight: bolder;
 }
+
+.inbox-nomessage {
+	font-family: monospace;
+}

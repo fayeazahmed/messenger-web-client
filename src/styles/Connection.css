@@ -12,8 +12,27 @@
 	background: var(--primary-color);
 }
 
-.chat-online {
+.connection-online {
 	color: green;
 	font-size: 13px;
 	margin-left: 3px;
+}
+
+.connection-title {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex-grow: 1;
+}
+
+.connection-title-bold {
+	font-weight: bold;
+}
+
+.connection-user {
+	font-size: 18px;
+}
+
+.connection-last-message {
+	font-size: 15px;
 }

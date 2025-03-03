@@ -74,6 +74,12 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async updateReadMessages(chatId) {
+        const response = await this.client.post(`/read-message/${chatId}`)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');

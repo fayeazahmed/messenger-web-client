@@ -51,6 +51,13 @@ class StompClientHandler {
         }
         ])
         this.setNewMessages(messages => [...messages, newMessage])
+        this.setConnections(connections => connections.map(connection => {
+            if (connection.receiver.username === newMessage.sender || connection.sender.username === newMessage.sender) {
+                return { ...connection, isOnline: true, lastMessage: (newMessage.sender + ": " + newMessage.text), isUnread: true };
+            }
+            return connection;
+        })
+        );
     }
 
     handleOnlineNotification(message) {

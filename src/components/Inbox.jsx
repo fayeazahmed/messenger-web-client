@@ -50,6 +50,8 @@ const Inbox = () => {
     }, [getMessages, user])
 
     const renderNewMessage = () => {
+        if (!selectedConnection) return
+
         let newMessageList = [];
         for (let i = 0; i < newMessages.length; i++) {
             if (!newMessages[i].isNotified && (newMessages[i].isSender || newMessages[i].sender === recipient)) {
@@ -59,6 +61,8 @@ const Inbox = () => {
         }
 
         if (newMessageList.length > 0) {
+            apiClient.updateReadMessages(selectedConnection.chat.id)
+
             setGroupedMessages(prev => {
                 const newGrouped = groupMessages(newMessageList);
                 const combinedGroupedMessages = { ...prev };
@@ -77,13 +81,15 @@ const Inbox = () => {
         }
     }
 
-    useEffect(renderNewMessage, [newMessages, recipient]);
+    useEffect(renderNewMessage, [newMessages, recipient, selectedConnection, selectedConnection?.chat?.id]);
 
     const updateConnection = () => {
         if (!user) {
             navigate("/");
         } else if (state?.connectionId) {
             const selectedConnection = connections.find(conn => conn.id === state.connectionId);
+            if (!selectedConnection) navigate("/")
+
             setSelectedConnection(selectedConnection);
             const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
             setRecipient(recipient)
@@ -99,10 +105,10 @@ const Inbox = () => {
                 <>
                     Inbox • {recipient}
                     {selectedConnection.isOnline ? (
-                        <span className="chat-online">
+                        <span className="connection-online">
                             <i className="fa fa-circle" aria-hidden="true"></i>
                         </span>
-                    ) : <span className="chat-online">{lastSeen}</span>}
+                    ) : <span className="connection-online">{lastSeen}</span>}
                 </>
             );
         }
@@ -139,14 +145,16 @@ const Inbox = () => {
         <div className="inbox">
             <div ref={messagesContainerRef} className="inbox-messages">
                 {
-                    Object.keys(groupedMessages).map(date => (
-                        <div key={date} className="inbox-messages-group-date">
-                            <p className="inbox-messages-date">{date}</p>
-                            {
-                                groupedMessages[date].map((message, index) => <Message key={index} message={message} isSender={message.isSender} />)
-                            }
-                        </div>
-                    ))
+                    Object.entries(groupedMessages).length > 0 ?
+                        Object.keys(groupedMessages).map(date => (
+                            <div key={date} className="inbox-messages-group-date">
+                                <p className="inbox-messages-date">{date}</p>
+                                {
+                                    groupedMessages[date].map((message, index) => <Message key={index} message={message} isSender={message.isSender} />)
+                                }
+                            </div>
+                        )) :
+                        <p className="inbox-nomessage">Start chatting with {recipient}</p>
                 }
             </div>
             <div className="inbox-input-container">
