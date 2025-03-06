@@ -60,7 +60,7 @@
 
 .inbox-message-read-container {
 	display: flex;
-	justify-content: end;
+	justify-content: space-between;
 	font-size: 11px;
 }
 

@@ -3,19 +3,20 @@ import "../styles/Inbox.css";
 import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
-import { groupMessages } from '../utils/dateUtils.js';
+import { getReadMessageTimestamp, groupMessages } from '../utils/dateUtils.js';
 import { buildNewMessage, getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSender } from '../utils/inboxUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, readMessageObj, setReadMessageObj } = useContext(Context);
+    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, readMessageObj, setReadMessageObj, typeMessageObj, setTypeMessageObj } = useContext(Context);
     const [recipient, setRecipient] = useState("")
+    const [readMessageTimestamp, setReadMessageTimestamp] = useState(null);
     const navigate = useNavigate();
     const { state } = useLocation();
     const messagesContainerRef = useRef(null);
-    const [readMessageTimestamp, setReadMessageTimestamp] = useState(null);
+    const typingTimeoutRef = useRef(null);
 
     const getMessages = useCallback(async () => {
         if (selectedConnection) {
@@ -31,15 +32,9 @@ const Inbox = () => {
             }
 
             const readMessage = await apiClient.getLastReadMessage(selectedConnection.chat.id);
-            console.log(readMessage);
             setReadMessageObj(readMessage)
             if (readMessage) {
-                const date = new Date(readMessage.readAt);
-                const timestamp = date.toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true
-                }).toLowerCase();
+                const timestamp = getReadMessageTimestamp(readMessage.readAt)
                 setReadMessageTimestamp(timestamp);
             }
         }
@@ -126,24 +121,35 @@ const Inbox = () => {
         if (e.key === "Enter" && !e.shiftKey && e.target.value.trim()) {
             sendMessage();
             e.preventDefault()
+        } else {
+            stompClient.sendTypeMessageNotification(user.username, recipient)
         }
     };
 
     const handleReadMessage = () => {
-        if (readMessageObj) {
-            const date = new Date(readMessageObj.readAt);
-            const timestamp = date.toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true
-            }).toLowerCase();
+        if (readMessageObj?.sender === recipient) {
+            const timestamp = getReadMessageTimestamp(readMessageObj.readAt)
             setReadMessageTimestamp(timestamp);
         } else {
             setReadMessageTimestamp(null);
         }
     }
 
-    useEffect(handleReadMessage, [readMessageObj])
+    useEffect(handleReadMessage, [readMessageObj, recipient])
+
+    const handleTypeMessage = () => {
+        if (typeMessageObj?.sender === recipient) {
+            if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+            }
+
+            typingTimeoutRef.current = setTimeout(() => {
+                setTypeMessageObj(null);
+            }, 1100);
+        }
+    }
+
+    useEffect(handleTypeMessage, [typeMessageObj, setTypeMessageObj, recipient])
 
     return (
         <div className="inbox">
@@ -153,13 +159,21 @@ const Inbox = () => {
                 }
             </div>
             <div className="inbox-message-read-container">
-                {
-                    readMessageTimestamp && <div className="inbox-message-read-content">
-                        <div>Seen</div>
-                        <div className="ms-1"><i className="fa fa-check" aria-hidden="true"></i></div>
-                        <div className="ms-1">{readMessageTimestamp}</div>
-                    </div>
-                }
+                <div>
+                    {
+                        typeMessageObj && `${recipient} is typing...`
+                    }
+                </div>
+                <div className="inbox-message-read-content">
+                    {
+                        readMessageTimestamp &&
+                        <>
+                            <div>Seen</div>
+                            <div className="ms-1"><i className="fa fa-check" aria-hidden="true"></i></div>
+                            <div className="ms-1">{readMessageTimestamp}</div>
+                        </>
+                    }
+                </div>
             </div>
             <div className="inbox-input-container">
                 <textarea

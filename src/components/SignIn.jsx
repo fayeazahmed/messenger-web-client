@@ -10,7 +10,7 @@ const SignIn = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [errMessage, setErrMessage] = useState("")
-    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications, setReadMessageObj } = useContext(Context);
+    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications, setReadMessageObj, setTypeMessageObj } = useContext(Context);
     const navigate = useNavigate();
 
     const finishSignIn = useCallback((jwt, username, user) => {
@@ -22,12 +22,13 @@ const SignIn = () => {
             setNotifications,
             setNewMessages,
             setConnections,
-            setReadMessageObj
+            setReadMessageObj,
+            setTypeMessageObj
         )
         stompClientInstance.connect()
         setStompClient(stompClientInstance)
         setUser(user)
-    }, [setNewMessages, setConnections, setStompClient, setUser, setNotifications, setReadMessageObj])
+    }, [setNewMessages, setConnections, setStompClient, setUser, setNotifications, setReadMessageObj, setTypeMessageObj])
 
     const authenticateUser = useCallback(async () => {
         const jwt = localStorage.getItem("jwt")

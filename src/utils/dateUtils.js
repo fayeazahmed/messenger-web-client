@@ -50,4 +50,13 @@ function getLastOnlineAt(lastOnlineAt) {
     return `${minutes}m`
 }
 
-export { groupMessages, getTimeFromTimestamp, getLastOnlineAt }
+function getReadMessageTimestamp(readAt) {
+    const date = new Date(readAt);
+    return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    }).toLowerCase();
+}
+
+export { groupMessages, getTimeFromTimestamp, getLastOnlineAt, getReadMessageTimestamp }
