@@ -9,6 +9,7 @@ function Provider({ children }) {
     const [newMessages, setNewMessages] = useState([]);
     const [connections, setConnections] = useState([]);
     const [headerText, setHeaderText] = useState("Home");
+    const [readMessageObj, setReadMessageObj] = useState(null);
 
     return (
         <Context.Provider
@@ -24,7 +25,9 @@ function Provider({ children }) {
                 headerText,
                 setHeaderText,
                 connections,
-                setConnections
+                setConnections,
+                readMessageObj,
+                setReadMessageObj
             }}
         >
             {children}

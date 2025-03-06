@@ -4,7 +4,7 @@ import { Context } from "../services/Context";
 import apiClient from "../services/ApiClient"
 
 const Header = () => {
-    const { user, setUser, stompClient, headerText, setHeaderText, setConnections } = useContext(Context);
+    const { user, setUser, stompClient, headerText, setHeaderText, setConnections, setNotifications, setNewMessages, setReadMessageObj } = useContext(Context);
     const navigate = useNavigate();
 
     const signout = () => {
@@ -13,8 +13,11 @@ const Header = () => {
         stompClient.disconnect()
         navigate("/");
         setUser(null)
+        setReadMessageObj(null)
         setHeaderText("")
         setConnections([])
+        setNotifications([])
+        setNewMessages([])
     }
 
     return (

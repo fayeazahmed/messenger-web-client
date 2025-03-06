@@ -1,28 +1,26 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import Message from './Message';
 import "../styles/Inbox.css";
 import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
-import { getLastOnlineAt, groupMessages } from '../utils/dateUtils.js';
+import { groupMessages } from '../utils/dateUtils.js';
+import { buildNewMessage, getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSender } from '../utils/inboxUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections } = useContext(Context);
+    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, readMessageObj, setReadMessageObj } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
     const { state } = useLocation();
     const messagesContainerRef = useRef(null);
+    const [readMessageTimestamp, setReadMessageTimestamp] = useState(null);
 
     const getMessages = useCallback(async () => {
         if (selectedConnection) {
             const messageList = await apiClient.getMessages(selectedConnection.chat.id);
-            const messages = messageList.map(message => {
-                message.isSender = message.sender.username === user.username;
-                return message;
-            });
+            const messages = setMessageSender(messageList, user)
             const groupedMessages = groupMessages(messages)
             setGroupedMessages(groupedMessages);
             const msgContainer = messagesContainerRef.current;
@@ -31,8 +29,21 @@ const Inbox = () => {
                     msgContainer.scrollTop = msgContainer.scrollHeight;
                 }, 0);
             }
+
+            const readMessage = await apiClient.getLastReadMessage(selectedConnection.chat.id);
+            console.log(readMessage);
+            setReadMessageObj(readMessage)
+            if (readMessage) {
+                const date = new Date(readMessage.readAt);
+                const timestamp = date.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true
+                }).toLowerCase();
+                setReadMessageTimestamp(timestamp);
+            }
         }
-    }, [selectedConnection, user]);
+    }, [selectedConnection, user, setReadMessageObj]);
 
     const scrollToBottom = () => {
         if (Object.entries(groupedMessages).length > 0) {
@@ -52,16 +63,12 @@ const Inbox = () => {
     const renderNewMessage = () => {
         if (!selectedConnection) return
 
-        let newMessageList = [];
-        for (let i = 0; i < newMessages.length; i++) {
-            if (!newMessages[i].isNotified && (newMessages[i].isSender || newMessages[i].sender === recipient)) {
-                newMessages[i].isNotified = true;
-                newMessageList.push(newMessages[i]);
-            }
-        }
-
+        const newMessageList = getNewMessages(newMessages, recipient)
         if (newMessageList.length > 0) {
             apiClient.updateReadMessages(selectedConnection.chat.id)
+            if (!newMessageList[newMessageList.length - 1].isSender) {
+                stompClient.sendReadMessageNotification(user.username, recipient, new Date())
+            }
 
             setGroupedMessages(prev => {
                 const newGrouped = groupMessages(newMessageList);
@@ -78,10 +85,12 @@ const Inbox = () => {
 
                 return combinedGroupedMessages;
             });
+
+            setReadMessageObj(null)
         }
     }
 
-    useEffect(renderNewMessage, [newMessages, recipient, selectedConnection, selectedConnection?.chat?.id]);
+    useEffect(renderNewMessage, [newMessages, recipient, selectedConnection, selectedConnection?.chat?.id, stompClient, user?.username, setReadMessageObj]);
 
     const updateConnection = () => {
         if (!user) {
@@ -91,26 +100,11 @@ const Inbox = () => {
             if (!selectedConnection) navigate("/")
 
             setSelectedConnection(selectedConnection);
-            const recipient = selectedConnection.sender.username === user.username ? selectedConnection.receiver.username : selectedConnection.sender.username
+            const recipient = getRecipient(selectedConnection, user)
             setRecipient(recipient)
-            let lastSeen = ""
-            if (!selectedConnection.isOnline) {
-                const lastOnlineAt =
-                    selectedConnection.sender.username === user.username
-                        ? selectedConnection.receiver.lastOnlineAt
-                        : selectedConnection.sender.lastOnlineAt;
-                lastSeen = getLastOnlineAt(lastOnlineAt)
-            }
-            setHeaderText(
-                <>
-                    Inbox • {recipient}
-                    {selectedConnection.isOnline ? (
-                        <span className="connection-online">
-                            <i className="fa fa-circle" aria-hidden="true"></i>
-                        </span>
-                    ) : <span className="connection-online">{lastSeen}</span>}
-                </>
-            );
+            const lastSeen = getLastOnlineAt(selectedConnection, user)
+            const headerText = getHeaderTextComponent(recipient, selectedConnection, lastSeen)
+            setHeaderText(headerText);
         }
     }
 
@@ -119,18 +113,12 @@ const Inbox = () => {
     const sendMessage = () => {
         if (messageInput.trim()) {
             stompClient.sendMessage(user.username, recipient, messageInput, selectedConnection);
-            const newMessage = {
-                text: messageInput,
-                recipient,
-                sender: user.username,
-                isNotified: false,
-                isSender: true,
-                createdAt: Date.now()
-            }
+            const newMessage = buildNewMessage(messageInput, recipient, user)
             setNewMessages((prevMessages) => [
                 ...prevMessages, newMessage
             ]);
             setMessageInput("");
+            setReadMessageObj(null)
         }
     };
 
@@ -141,20 +129,36 @@ const Inbox = () => {
         }
     };
 
+    const handleReadMessage = () => {
+        if (readMessageObj) {
+            const date = new Date(readMessageObj.readAt);
+            const timestamp = date.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            }).toLowerCase();
+            setReadMessageTimestamp(timestamp);
+        } else {
+            setReadMessageTimestamp(null);
+        }
+    }
+
+    useEffect(handleReadMessage, [readMessageObj])
+
     return (
         <div className="inbox">
             <div ref={messagesContainerRef} className="inbox-messages">
                 {
-                    Object.entries(groupedMessages).length > 0 ?
-                        Object.keys(groupedMessages).map(date => (
-                            <div key={date} className="inbox-messages-group-date">
-                                <p className="inbox-messages-date">{date}</p>
-                                {
-                                    groupedMessages[date].map((message, index) => <Message key={index} message={message} isSender={message.isSender} />)
-                                }
-                            </div>
-                        )) :
-                        <p className="inbox-nomessage">Start chatting with {recipient}</p>
+                    renderMessages(groupedMessages, recipient)
+                }
+            </div>
+            <div className="inbox-message-read-container">
+                {
+                    readMessageTimestamp && <div className="inbox-message-read-content">
+                        <div>Seen</div>
+                        <div className="ms-1"><i className="fa fa-check" aria-hidden="true"></i></div>
+                        <div className="ms-1">{readMessageTimestamp}</div>
+                    </div>
                 }
             </div>
             <div className="inbox-input-container">

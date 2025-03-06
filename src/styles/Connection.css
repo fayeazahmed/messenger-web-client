@@ -34,5 +34,11 @@
 }
 
 .connection-last-message {
+	text-align: left;
 	font-size: 15px;
+	max-width: 316px;
+	max-height: 50px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

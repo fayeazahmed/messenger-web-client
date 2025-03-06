@@ -57,3 +57,13 @@
 .inbox-nomessage {
 	font-family: monospace;
 }
+
+.inbox-message-read-container {
+	display: flex;
+	justify-content: end;
+	font-size: 11px;
+}
+
+.inbox-message-read-content {
+	display: flex;
+}
