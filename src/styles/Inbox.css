@@ -58,12 +58,7 @@
 	font-family: monospace;
 }
 
-.inbox-message-read-container {
-	display: flex;
-	justify-content: space-between;
+.inbox-message-type-container {
+	text-align: left;
 	font-size: 11px;
-}
-
-.inbox-message-read-content {
-	display: flex;
 }

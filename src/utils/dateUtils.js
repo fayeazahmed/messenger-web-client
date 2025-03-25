@@ -56,7 +56,7 @@ function getReadMessageTimestamp(readAt) {
         hour: "numeric",
         minute: "2-digit",
         hour12: true
-    }).toLowerCase();
+    }).toLowerCase().replace(' ', '');
 }
 
 export { groupMessages, getTimeFromTimestamp, getLastOnlineAt, getReadMessageTimestamp }

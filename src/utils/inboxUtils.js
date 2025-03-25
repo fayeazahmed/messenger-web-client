@@ -1,5 +1,5 @@
 import Message from '../components/Message.jsx';
-import { getLastOnlineAt as getLastOnline } from './dateUtils.js';
+import { getLastOnlineAt as getLastOnline, getReadMessageTimestamp } from './dateUtils.js';
 
 function setMessageSender(messages, user) {
     return messages.map(message => {
@@ -62,10 +62,19 @@ function renderMessages(groupedMessages, recipient) {
             <div key={date} className="inbox-messages-group-date">
                 <p className="inbox-messages-date">{date}</p>
                 {
-                    groupedMessages[date].map((message, index) => <Message key={index} message={message} isSender={message.isSender} />)
+                    groupedMessages[date].map((message, index) => <Message key={index} message={message} isSender={message.isSender} readTimestamp={message.readTimestamp} />)
                 }
             </div>
         )) : <p className="inbox-nomessage">Start chatting with {recipient}</p>
+}
+
+function setMessageSeenTimestamp(messages, readMessage) {
+    return messages.map(message => {
+        if (message.id === readMessage.message.id) {
+            message.readTimestamp = getReadMessageTimestamp(readMessage.readAt)
+        }
+        return message;
+    });
 }
 
 export {
@@ -75,5 +84,6 @@ export {
     getLastOnlineAt,
     getHeaderTextComponent,
     buildNewMessage,
-    renderMessages
+    renderMessages,
+    setMessageSeenTimestamp
 }

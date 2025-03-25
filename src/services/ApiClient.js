@@ -75,12 +75,6 @@ class ApiClient {
         return response.data.data
     }
 
-    async updateReadMessages(chatId) {
-        const response = await this.client.post(`/read-message/${chatId}`)
-        console.log(response);
-        return response.data.data
-    }
-
     async getLastReadMessage(chatId) {
         const response = await this.client.get(`/read-message/${chatId}`)
         console.log(response);

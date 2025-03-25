@@ -4,15 +4,14 @@ import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
 import { getReadMessageTimestamp, groupMessages } from '../utils/dateUtils.js';
-import { buildNewMessage, getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSender } from '../utils/inboxUtils.js';
+import { buildNewMessage, getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSeenTimestamp, setMessageSender } from '../utils/inboxUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, readMessageObj, setReadMessageObj, typeMessageObj, setTypeMessageObj } = useContext(Context);
+    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj } = useContext(Context);
     const [recipient, setRecipient] = useState("")
-    const [readMessageTimestamp, setReadMessageTimestamp] = useState(null);
     const navigate = useNavigate();
     const { state } = useLocation();
     const messagesContainerRef = useRef(null);
@@ -21,7 +20,11 @@ const Inbox = () => {
     const getMessages = useCallback(async () => {
         if (selectedConnection) {
             const messageList = await apiClient.getMessages(selectedConnection.chat.id);
-            const messages = setMessageSender(messageList, user)
+            const readMessage = await apiClient.getLastReadMessage(selectedConnection.chat.id);
+            let messages = setMessageSender(messageList, user)
+            if (readMessage != null) {
+                messages = setMessageSeenTimestamp(messages, readMessage)
+            }
             const groupedMessages = groupMessages(messages)
             setGroupedMessages(groupedMessages);
             const msgContainer = messagesContainerRef.current;
@@ -30,15 +33,9 @@ const Inbox = () => {
                     msgContainer.scrollTop = msgContainer.scrollHeight;
                 }, 0);
             }
-
-            const readMessage = await apiClient.getLastReadMessage(selectedConnection.chat.id);
-            setReadMessageObj(readMessage)
-            if (readMessage) {
-                const timestamp = getReadMessageTimestamp(readMessage.readAt)
-                setReadMessageTimestamp(timestamp);
-            }
+            stompClient.sendReadMessageNotification(user.username, recipient, new Date(), selectedConnection?.chat?.id)
         }
-    }, [selectedConnection, user, setReadMessageObj]);
+    }, [selectedConnection, user, recipient, stompClient]);
 
     const scrollToBottom = () => {
         if (Object.entries(groupedMessages).length > 0) {
@@ -60,9 +57,8 @@ const Inbox = () => {
 
         const newMessageList = getNewMessages(newMessages, recipient)
         if (newMessageList.length > 0) {
-            apiClient.updateReadMessages(selectedConnection.chat.id)
             if (!newMessageList[newMessageList.length - 1].isSender) {
-                stompClient.sendReadMessageNotification(user.username, recipient, new Date())
+                stompClient.sendReadMessageNotification(user.username, recipient, new Date(), selectedConnection?.chat?.id)
             }
 
             setGroupedMessages(prev => {
@@ -81,11 +77,10 @@ const Inbox = () => {
                 return combinedGroupedMessages;
             });
 
-            setReadMessageObj(null)
         }
     }
 
-    useEffect(renderNewMessage, [newMessages, recipient, selectedConnection, selectedConnection?.chat?.id, stompClient, user?.username, setReadMessageObj]);
+    useEffect(renderNewMessage, [newMessages, recipient, selectedConnection, selectedConnection?.chat?.id, stompClient, user?.username]);
 
     const updateConnection = () => {
         if (!user) {
@@ -113,7 +108,6 @@ const Inbox = () => {
                 ...prevMessages, newMessage
             ]);
             setMessageInput("");
-            setReadMessageObj(null)
         }
     };
 
@@ -125,17 +119,6 @@ const Inbox = () => {
             stompClient.sendTypeMessageNotification(user.username, recipient)
         }
     };
-
-    const handleReadMessage = () => {
-        if (readMessageObj?.sender === recipient) {
-            const timestamp = getReadMessageTimestamp(readMessageObj.readAt)
-            setReadMessageTimestamp(timestamp);
-        } else {
-            setReadMessageTimestamp(null);
-        }
-    }
-
-    useEffect(handleReadMessage, [readMessageObj, recipient])
 
     const handleTypeMessage = () => {
         if (typeMessageObj?.sender === recipient) {
@@ -158,22 +141,10 @@ const Inbox = () => {
                     renderMessages(groupedMessages, recipient)
                 }
             </div>
-            <div className="inbox-message-read-container">
-                <div>
-                    {
-                        typeMessageObj && `${recipient} is typing...`
-                    }
-                </div>
-                <div className="inbox-message-read-content">
-                    {
-                        readMessageTimestamp &&
-                        <>
-                            <div>Seen</div>
-                            <div className="ms-1"><i className="fa fa-check" aria-hidden="true"></i></div>
-                            <div className="ms-1">{readMessageTimestamp}</div>
-                        </>
-                    }
-                </div>
+            <div className="inbox-message-type-container">
+                {
+                    typeMessageObj?.sender === recipient && `${recipient} is typing...`
+                }
             </div>
             <div className="inbox-input-container">
                 <textarea

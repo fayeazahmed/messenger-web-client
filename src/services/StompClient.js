@@ -33,8 +33,8 @@ class StompClientHandler {
         this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender, connection }))
     }
 
-    sendReadMessageNotification(sender, recipient, readAt) {
-        this.client.send("/app/read-message", {}, JSON.stringify({ recipient, sender, readAt }))
+    sendReadMessageNotification(sender, recipient, readAt, chatId) {
+        this.client.send("/app/read-message", {}, JSON.stringify({ recipient, sender, readAt, chatId }))
     }
 
     sendTypeMessageNotification(sender, recipient) {
