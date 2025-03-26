@@ -77,6 +77,22 @@ function setMessageSeenTimestamp(messages, readMessage) {
     });
 }
 
+function updateMessageSeenTimestamp(groupedMessages, readMessage) {
+    console.log(groupedMessages);
+
+    const updatedMessages = Object.fromEntries(
+        Object.entries(groupedMessages).map(([date, messages]) => [
+            date,
+            messages.map(message => ({
+                ...message,
+                readTimestamp: message.id === readMessage.message.id ? getReadMessageTimestamp(readMessage.readAt) : null
+            }))
+        ])
+    );
+
+    return updatedMessages;
+}
+
 export {
     setMessageSender,
     getNewMessages,
@@ -85,5 +101,6 @@ export {
     getHeaderTextComponent,
     buildNewMessage,
     renderMessages,
-    setMessageSeenTimestamp
+    setMessageSeenTimestamp,
+    updateMessageSeenTimestamp
 }

@@ -38,6 +38,12 @@ const Connection = ({ connection }) => {
             {
                 getConnectionTitleComponent(title, lastMessage, lastMessageUnread)
             }
+            {
+                connection.isReadByConnection &&
+                <div className="connection-read-message">
+                    <i className="fa fa-check" aria-hidden="true"></i>
+                </div>
+            }
             <div className="connection-online">
                 {
                     getConnectionOnlineComponent(connection, lastSeen)

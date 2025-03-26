@@ -45,4 +45,10 @@
 	text-align: right;
 	font-size: 11px;
 	margin: 0;
+	margin-right: -42px;
+	transition: margin-right ease-in 0.1s;
+}
+
+.read-message-timestamp:hover {
+	margin-right: 0;
 }

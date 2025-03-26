@@ -3,14 +3,14 @@ import "../styles/Inbox.css";
 import { Context } from "../services/Context";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
-import { getReadMessageTimestamp, groupMessages } from '../utils/dateUtils.js';
-import { buildNewMessage, getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSeenTimestamp, setMessageSender } from '../utils/inboxUtils.js';
+import { groupMessages } from '../utils/dateUtils.js';
+import { getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSeenTimestamp, setMessageSender, updateMessageSeenTimestamp } from '../utils/inboxUtils.js';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setNewMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj } = useContext(Context);
+    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
     const { state } = useLocation();
@@ -103,10 +103,6 @@ const Inbox = () => {
     const sendMessage = () => {
         if (messageInput.trim()) {
             stompClient.sendMessage(user.username, recipient, messageInput, selectedConnection);
-            const newMessage = buildNewMessage(messageInput, recipient, user)
-            setNewMessages((prevMessages) => [
-                ...prevMessages, newMessage
-            ]);
             setMessageInput("");
         }
     };
@@ -133,6 +129,21 @@ const Inbox = () => {
     }
 
     useEffect(handleTypeMessage, [typeMessageObj, setTypeMessageObj, recipient])
+
+    const handleReadMessageUpdate = useCallback(async () => {
+        if (readMessageObj?.sender === recipient) {
+            const readMessage = await apiClient.getLastReadMessage(selectedConnection.chat.id);
+            if (readMessage) {
+                const updatedGroupedMessages = updateMessageSeenTimestamp(groupedMessages, readMessage)
+                setGroupedMessages(updatedGroupedMessages)
+            }
+        }
+        // eslint-disable-next-line
+    }, [selectedConnection, readMessageObj, recipient]);
+
+    useEffect(() => {
+        handleReadMessageUpdate()
+    }, [handleReadMessageUpdate])
 
     return (
         <div className="inbox">

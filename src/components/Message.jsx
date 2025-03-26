@@ -7,7 +7,7 @@ const Message = ({ message, isSender, readTimestamp }) => {
             <p className={`chat-timestamp ${isSender ? "chat-timestamp-sent" : "chat-timestamp-received"}`}>{getTimeFromTimestamp(message.createdAt)}</p>
             <pre className={`chat-message ${isSender ? "chat-message-sent" : "chat-message-received"}`}>{message.text.trim()}</pre>
             {
-                readTimestamp && <p className="read-message-timestamp">Seen {readTimestamp}</p>
+                readTimestamp && <p className="read-message-timestamp">Seen<i className="fa fa-check" aria-hidden="true"></i> {readTimestamp}</p>
             }
         </div>
     );

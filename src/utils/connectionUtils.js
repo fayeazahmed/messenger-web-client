@@ -6,6 +6,7 @@ function modifyConnectionListResponse(connections) {
         isOnline: item.online,
         lastMessage: item.lastMessage,
         isUnread: item.unread,
+        isReadByConnection: item.readByConnection
     }));
 }
 

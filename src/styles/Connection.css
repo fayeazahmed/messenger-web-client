@@ -42,3 +42,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
+.connection-read-message {
+	font-size: 13px;
+}
