@@ -11,6 +11,7 @@ function Provider({ children }) {
     const [headerText, setHeaderText] = useState("Home");
     const [readMessageObj, setReadMessageObj] = useState(null);
     const [typeMessageObj, setTypeMessageObj] = useState(null);
+    const [darkMode, setDarkMode] = useState(false)
 
     return (
         <Context.Provider
@@ -30,7 +31,9 @@ function Provider({ children }) {
                 readMessageObj,
                 setReadMessageObj,
                 typeMessageObj,
-                setTypeMessageObj
+                setTypeMessageObj,
+                darkMode,
+                setDarkMode
             }}
         >
             {children}

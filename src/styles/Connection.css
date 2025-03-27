@@ -8,8 +8,17 @@
 	color: black;
 }
 
+.connection-dark {
+	color: white;
+}
+
 .connection:hover {
 	background: var(--primary-color);
+}
+
+.connection-dark:hover {
+	background: var(--primary-color);
+	color: black;
 }
 
 .connection-online {

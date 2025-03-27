@@ -4,7 +4,7 @@ import { Context } from "../services/Context";
 import apiClient from "../services/ApiClient"
 
 const Header = () => {
-    const { user, setUser, stompClient, headerText, setHeaderText, setConnections, setNotifications, setNewMessages, setReadMessageObj } = useContext(Context);
+    const { user, setUser, stompClient, headerText, setHeaderText, setConnections, setNotifications, setNewMessages, setReadMessageObj, darkMode } = useContext(Context);
     const navigate = useNavigate();
 
     const signout = () => {
@@ -21,16 +21,18 @@ const Header = () => {
     }
 
     return (
-        <div className="chat-header">
+        <div className={`chat-header ${darkMode ? "chat-header-dark" : ""}`}>
             <div className="chat-header-text">
                 <h2 className="text-start logo" onClick={() => navigate("/")}>AllIN1</h2>
                 <h6 className="text-start">{headerText}</h6>
             </div>
-            <div className="chat-header-menu">
-                {
-                    user && <button onClick={signout} className="btn btn-sm btn-warning"><i className="fa fa-sign-out" aria-hidden="true"></i></button>
-                }
-            </div>
+            {
+                user &&
+                <div className="chat-header-menu">
+                    <button onClick={() => navigate("/settings")} className="btn btn-sm btn-dark me-2"><i className="fa fa-cog" aria-hidden="true"></i></button>
+                    <button onClick={signout} className="btn btn-sm btn-dark"><i className="fa fa-sign-out" aria-hidden="true"></i></button>
+                </div>
+            }
         </div>
     )
 }

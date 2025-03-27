@@ -6,7 +6,7 @@ import { Context } from "../services/Context";
 const Connect = ({ caller, user, connection: connectionFromProps }) => {
     const [btnDisabled, setBtnDisabled] = useState(false);
     const [connectionState, setConnectionState] = useState(connectionFromProps);
-    const { setConnections } = useContext(Context);
+    const { setConnections, darkMode } = useContext(Context);
 
     const addConnection = async () => {
         setBtnDisabled(true);
@@ -108,7 +108,7 @@ const Connect = ({ caller, user, connection: connectionFromProps }) => {
     };
 
     return (
-        <div key={user.id} className="add-connection-user">
+        <div key={user.id} className={`add-connection-user ${darkMode ? "add-connection-user-dark" : ""}`}>
             <div className="me-3">
                 <i className="fa fa-user-circle-o" aria-hidden="true"></i>
             </div>

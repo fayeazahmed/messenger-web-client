@@ -20,6 +20,12 @@
 	min-height: 83px;
 }
 
+.chat-header-dark {
+	background-color: var(--dark-mode);
+	color: white;
+	border-bottom: 1px solid white;
+}
+
 .chat-header .logo {
 	cursor: pointer;
 }

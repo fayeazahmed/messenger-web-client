@@ -10,8 +10,15 @@ const SignIn = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [errMessage, setErrMessage] = useState("")
-    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications, setReadMessageObj, setTypeMessageObj } = useContext(Context);
+    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications, setReadMessageObj, setTypeMessageObj, setDarkMode } = useContext(Context);
     const navigate = useNavigate();
+
+    const setTheme = useCallback(() => {
+        const value = localStorage.getItem("allin1-theme")
+        if (value) {
+            setDarkMode(value === "dark" ? true : false)
+        }
+    }, [setDarkMode])
 
     const finishSignIn = useCallback((jwt, username, user) => {
         apiClient.setAuthorizationHeader(jwt)
@@ -48,12 +55,13 @@ const SignIn = () => {
     }, [finishSignIn])
 
     useEffect(() => {
+        setTheme()
         if (user) {
             navigate("/connections");
         } else {
             authenticateUser()
         }
-    }, [user, navigate, authenticateUser])
+    }, [user, navigate, authenticateUser, setTheme])
 
 
     const handleInputKeyDown = (key) => {

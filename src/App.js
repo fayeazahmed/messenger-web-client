@@ -1,11 +1,9 @@
 import React from "react";
 import Header from "./components/Header";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./components/Home";
-import Inbox from "./components/Inbox";
+import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "./services/Context";
 import Notification from "./components/Notification";
-import Connections from "./components/Connections";
+import MainComponent from "./components/MainComponent";
 
 function App() {
   return (
@@ -15,13 +13,7 @@ function App() {
           <Notification />
           <main>
             <Header />
-            <div className="main-content">
-              <Routes>
-                <Route path="/connections" element={<Connections />} />
-                <Route path="/inbox" element={<Inbox />} />
-                <Route path="*" element={<Home />} />
-              </Routes>
-            </div>
+            <MainComponent />
           </main>
         </div>
       </Router>

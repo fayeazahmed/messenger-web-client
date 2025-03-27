@@ -9,7 +9,7 @@ const Connection = ({ connection }) => {
     const [lastSeen, setLastSeen] = useState("")
     const [lastMessage, setLastMessage] = useState("")
     const [lastMessageUnread, setLastMessageUnread] = useState(false)
-    const { user } = useContext(Context);
+    const { user, darkMode } = useContext(Context);
     const navigate = useNavigate();
 
     const renderConnection = () => {
@@ -27,7 +27,7 @@ const Connection = ({ connection }) => {
 
     return (
         <div
-            className="connection"
+            className={`connection ${darkMode ? "connection-dark" : ""}`}
             onClick={() =>
                 navigate("/inbox", { state: { connectionId: connection.id } })
             }

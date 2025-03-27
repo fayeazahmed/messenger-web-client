@@ -14,6 +14,10 @@
 	white-space: pre-wrap;
 }
 
+.chat-message-dark {
+	color: black;
+}
+
 .chat-message-sent {
 	background-color: var(--primary-color);
 	align-self: flex-end;

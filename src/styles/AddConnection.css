@@ -22,8 +22,16 @@
 	color: black;
 }
 
+.add-connection-user-dark {
+	color: white;
+}
+
 .add-connection-user:hover {
 	background: var(--primary-color);
+}
+
+.add-connection-user-dark:hover {
+	color: black;
 }
 
 .add-connection-user-username {

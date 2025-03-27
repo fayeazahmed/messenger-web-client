@@ -21,6 +21,10 @@
 	border-top: 1px solid #ddd;
 }
 
+.inbox-input-container-dark {
+	background-color: var(--dark-mode);
+}
+
 .inbox-input {
 	font-family: "Miriam Libre", serif;
 	font-size: 12px;
@@ -40,7 +44,7 @@
 
 .inbox-send-button {
 	background-color: var(--primary-color);
-	color: white;
+	color: #574f4f;
 	padding: 10px 15px;
 	border: none;
 	border-radius: 5px;

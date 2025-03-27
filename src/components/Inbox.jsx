@@ -10,7 +10,7 @@ const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj } = useContext(Context);
+    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
     const { state } = useLocation();
@@ -157,7 +157,7 @@ const Inbox = () => {
                     typeMessageObj?.sender === recipient && `${recipient} is typing...`
                 }
             </div>
-            <div className="inbox-input-container">
+            <div className={`inbox-input-container ${darkMode ? "inbox-input-container-dark" : ""}`}>
                 <textarea
                     type="text"
                     value={messageInput}

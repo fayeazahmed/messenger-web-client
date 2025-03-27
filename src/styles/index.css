@@ -10,6 +10,7 @@
 :root {
 	--bg-color: #2d2d2d;
 	--primary-color: #ebeb95;
+	--dark-mode: #121212;
 }
 
 .App {
@@ -39,4 +40,9 @@ main {
 	flex-grow: 1;
 	background: white;
 	padding: 5px;
+}
+
+.main-content-dark {
+	background-color: var(--dark-mode);
+	color: white;
 }
