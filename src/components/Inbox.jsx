@@ -10,7 +10,7 @@ const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode } = useContext(Context);
+    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode, setSelectedConnectionInInbox } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const navigate = useNavigate();
     const { state } = useLocation();
@@ -90,6 +90,7 @@ const Inbox = () => {
             if (!selectedConnection) navigate("/")
 
             setSelectedConnection(selectedConnection);
+            setSelectedConnectionInInbox(selectedConnection)
             const recipient = getRecipient(selectedConnection, user)
             setRecipient(recipient)
             const lastSeen = getLastOnlineAt(selectedConnection, user)
@@ -98,7 +99,13 @@ const Inbox = () => {
         }
     }
 
-    useEffect(updateConnection, [connections, state, state?.connectionId, user, navigate, setRecipient, setHeaderText])
+    useEffect(updateConnection, [connections, state, state?.connectionId, user, navigate, setRecipient, setHeaderText, setSelectedConnectionInInbox])
+
+    useEffect(() => {
+        return () => {
+            setSelectedConnectionInInbox(null)
+        }
+    }, [setSelectedConnectionInInbox])
 
     const sendMessage = () => {
         if (messageInput.trim()) {
@@ -145,8 +152,17 @@ const Inbox = () => {
         handleReadMessageUpdate()
     }, [handleReadMessageUpdate])
 
+    const getBgImageStyle = () => {
+        if (selectedConnection.inboxTheme === 0) return {}
+
+        const imageUrl = require(`../images/${selectedConnection.inboxTheme}.jpg`)
+        return { backgroundImage: `url(${imageUrl})` }
+    }
+
+    if (selectedConnection === null) return
+
     return (
-        <div className="inbox">
+        <div style={getBgImageStyle()} className="inbox">
             <div ref={messagesContainerRef} className="inbox-messages">
                 {
                     renderMessages(groupedMessages, recipient)
@@ -166,7 +182,7 @@ const Inbox = () => {
                     placeholder="Send something..."
                     className="inbox-input"
                 />
-                <button onClick={sendMessage} className="inbox-send-button">
+                <button onClick={sendMessage} className="inbox-send-button btn btn-dark">
                     <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
                 </button>
             </div>

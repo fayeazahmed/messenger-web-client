@@ -69,8 +69,8 @@ class ApiClient {
         return response.data.data
     }
 
-    async getConnection(connectionId) {
-        const response = await this.client.get(`/connection/${connectionId}`)
+    async updateConnectionTheme(connectionId, theme) {
+        const response = await this.client.put(`/connection/theme/${connectionId}?theme=${theme}`)
         console.log(response);
         return response.data.data
     }

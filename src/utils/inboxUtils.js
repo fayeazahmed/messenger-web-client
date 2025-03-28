@@ -78,8 +78,6 @@ function setMessageSeenTimestamp(messages, readMessage) {
 }
 
 function updateMessageSeenTimestamp(groupedMessages, readMessage) {
-    console.log(groupedMessages);
-
     const updatedMessages = Object.fromEntries(
         Object.entries(groupedMessages).map(([date, messages]) => [
             date,

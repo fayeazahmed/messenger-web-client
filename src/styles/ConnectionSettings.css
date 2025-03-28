@@ -1,0 +1,33 @@
+.connection-settings-button-container {
+	margin-bottom: 7px;
+	text-align: left;
+	border-radius: 3px;
+	padding: 8px;
+	transition: background-color 0.15s ease-in-out;
+	cursor: pointer;
+}
+
+.connection-settings-button-container:hover {
+	background-color: var(--primary-color);
+}
+
+.connection-settings-button-container-dark:hover {
+	color: black;
+}
+
+.inbox-themes {
+	display: flex;
+	gap: 10px;
+}
+
+.inbox-themes-image {
+	width: 80px;
+	height: 80px;
+	border: 2px solid gray;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.inbox-themes-image-selected {
+	border: 3px solid var(--primary-color);
+}

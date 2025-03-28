@@ -1,0 +1,25 @@
+.chat-header {
+	padding: 5px;
+	min-height: 83px;
+	position: relative;
+}
+
+.chat-header-dark {
+	background-color: var(--dark-mode);
+	color: white;
+	border-bottom: 1px solid white;
+}
+
+.chat-header .logo {
+	cursor: pointer;
+}
+
+.chat-header-user-menu {
+	display: flex;
+	justify-content: space-between;
+}
+
+.chat-header-connection-menu {
+	display: flex;
+	align-items: center;
+}

@@ -12,6 +12,7 @@ function Provider({ children }) {
     const [readMessageObj, setReadMessageObj] = useState(null);
     const [typeMessageObj, setTypeMessageObj] = useState(null);
     const [darkMode, setDarkMode] = useState(false)
+    const [selectedConnectionInInbox, setSelectedConnectionInInbox] = useState(null);
 
     return (
         <Context.Provider
@@ -33,7 +34,9 @@ function Provider({ children }) {
                 typeMessageObj,
                 setTypeMessageObj,
                 darkMode,
-                setDarkMode
+                setDarkMode,
+                selectedConnectionInInbox,
+                setSelectedConnectionInInbox
             }}
         >
             {children}
