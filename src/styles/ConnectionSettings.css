@@ -31,3 +31,13 @@
 .inbox-themes-image-selected {
 	border: 3px solid var(--primary-color);
 }
+
+.delete-connection {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.delete-connection button {
+	width: 165px;
+}

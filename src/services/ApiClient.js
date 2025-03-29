@@ -80,6 +80,12 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async deleteConnection(connectionId) {
+        const response = await this.client.delete(`/connection/${connectionId}`)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');

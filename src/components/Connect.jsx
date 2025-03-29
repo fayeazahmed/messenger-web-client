@@ -40,7 +40,7 @@ const Connect = ({ caller, user, connection: connectionFromProps }) => {
             btnDisabled ||
             (caller === "SEARCH" &&
                 connectionState?.status &&
-                connectionState.status !== "ACCEPTED");
+                (connectionState.status === "REQUESTED" || connectionState.status === "REJECTED"));
 
         const text = disabled
             ? "Requested"
@@ -64,7 +64,7 @@ const Connect = ({ caller, user, connection: connectionFromProps }) => {
                     icon = connectIcon;
                 }
             } else {
-                if (connectionState) {
+                if (connectionState?.status === "ACCEPTED") {
                     icon = chatIcon;
                     isChatButton = true;
                 } else {
@@ -77,7 +77,9 @@ const Connect = ({ caller, user, connection: connectionFromProps }) => {
             (connectionState
                 ? connectionState.status === "REQUESTED"
                     ? acceptConnection
-                    : null
+                    : connectionState.status === "DELETED"
+                        ? addConnection
+                        : null
                 : addConnection);
 
         return isChatButton ? (
