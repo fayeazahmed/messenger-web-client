@@ -34,13 +34,13 @@ const AddConnection = () => {
             <div className="add-connection-requests">
                 {connectionRequests.length > 0 && <p className="add-connection-requests-header">Connection Requests</p>}
                 {
-                    connectionRequests.map((result, index) => <Connect caller="REQUESTS" key={index} connection={result} user={result.sender} />)
+                    connectionRequests.map((result, index) => <Connect caller="REQUESTS" key={index} connection={result} user={result.sender} currentUser={user} setConnectionRequests={setConnectionRequests} setSearchList={setSearchList} />)
                 }
             </div>
             <input className="add-connection-search-input" value={searchText} onInput={searchUsers} onChange={e => setSearchText(e.target.value)} type="text" placeholder="Type to search for users..." />
             <div className="add-connection-users">
                 {
-                    searchList.map((result, index) => <Connect caller="SEARCH" key={index} connection={result.connection} user={result.user} />)
+                    searchList.map((result, index) => <Connect caller="SEARCH" key={index} connection={result.connection} user={result.user} currentUser={user} setConnectionRequests={setConnectionRequests} setSearchList={setSearchList} />)
                 }
             </div>
         </div>

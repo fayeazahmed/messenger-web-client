@@ -57,8 +57,8 @@ class ApiClient {
         return response.data
     }
 
-    async acceptConnection(connectionId) {
-        const response = await this.client.post(`/connection/request/accept?connectionId=${connectionId}`)
+    async handleConnectionRequest(connectionId, isAccepted) {
+        const response = await this.client.post(`/connection/request/accept?connectionId=${connectionId}&isAccepted=${isAccepted}`)
         console.log(response);
         return response.data.data
     }
