@@ -21,6 +21,7 @@
 	padding: 10px;
 	background-color: #fff;
 	border-top: 1px solid #ddd;
+	position: relative;
 }
 
 .inbox-input-container-dark {
@@ -35,7 +36,6 @@
 	padding: 10px;
 	border: 1px solid #ddd;
 	border-radius: 5px;
-	margin-right: 10px;
 	text-align: left;
 	max-height: 45px;
 }
@@ -65,4 +65,16 @@
 .inbox-message-type-container {
 	text-align: left;
 	font-size: 11px;
+}
+
+.inbox-input-emoji-btn {
+	border: 0;
+	width: 36px;
+	background: white;
+}
+
+.inbox-input-emoji-picker {
+	position: absolute;
+	right: 18px;
+	bottom: 56px;
 }

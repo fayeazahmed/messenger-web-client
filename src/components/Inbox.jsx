@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
 import { groupMessages } from '../utils/dateUtils.js';
 import { getHeaderTextComponent, getLastOnlineAt, getNewMessages, getRecipient, renderMessages, setMessageSeenTimestamp, setMessageSender, updateMessageSeenTimestamp } from '../utils/inboxUtils.js';
+import InboxInput from './InboxInput.jsx';
 
 const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
@@ -12,6 +13,7 @@ const Inbox = () => {
     const [selectedConnection, setSelectedConnection] = useState(null);
     const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode, setSelectedConnectionInInbox } = useContext(Context);
     const [recipient, setRecipient] = useState("")
+    const [emojiPicker, setEmojiPicker] = useState(false);
     const navigate = useNavigate();
     const { state } = useLocation();
     const messagesContainerRef = useRef(null);
@@ -109,6 +111,7 @@ const Inbox = () => {
 
     const sendMessage = () => {
         if (messageInput.trim()) {
+            setEmojiPicker(false)
             stompClient.sendMessage(user.username, recipient, messageInput, selectedConnection);
             setMessageInput("");
         }
@@ -163,7 +166,7 @@ const Inbox = () => {
 
     return (
         <div style={getBgImageStyle()} className="inbox">
-            <div ref={messagesContainerRef} className="inbox-messages">
+            <div onClick={() => setEmojiPicker(false)} ref={messagesContainerRef} className="inbox-messages">
                 {
                     renderMessages(groupedMessages, recipient)
                 }
@@ -173,19 +176,17 @@ const Inbox = () => {
                     typeMessageObj?.sender === recipient && `${recipient} is typing...`
                 }
             </div>
-            <div className={`inbox-input-container ${darkMode ? "inbox-input-container-dark" : ""}`}>
-                <textarea
-                    type="text"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyDown={handleMessageInputChange}
-                    placeholder="Send something..."
-                    className="inbox-input"
+            {
+                <InboxInput
+                    darkMode={darkMode}
+                    messageInput={messageInput}
+                    setMessageInput={setMessageInput}
+                    handleMessageInputChange={handleMessageInputChange}
+                    sendMessage={sendMessage}
+                    emojiPicker={emojiPicker}
+                    setEmojiPicker={setEmojiPicker}
                 />
-                <button onClick={sendMessage} className="inbox-send-button btn btn-dark">
-                    <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
-                </button>
-            </div>
+            }
         </div>
     )
 }
