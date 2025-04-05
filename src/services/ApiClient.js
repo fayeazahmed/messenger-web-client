@@ -86,6 +86,18 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async getUserSettings() {
+        const response = await this.client.get(`/user/user-settings`)
+        console.log(response);
+        return response.data.data
+    }
+
+    async updateUserSettings(settings) {
+        const response = await this.client.put(`/user/user-settings`, settings)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');
