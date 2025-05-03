@@ -1,0 +1,61 @@
+.group-chats-header {
+	font-family: monospace;
+	text-align: left;
+	margin: 0;
+}
+
+.group-chats-create-title,
+.group-chats-create-members {
+	padding: 2px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	text-align: left;
+	font-size: 12px;
+	height: 37px;
+	width: 100%;
+	margin-bottom: 3px;
+}
+
+.group-chats-create-title:focus-visible,
+.group-chats-create-members:focus-visible {
+	outline: 0;
+}
+
+.group-chats-create-members-container {
+	display: flex;
+	align-items: center;
+}
+
+.group-chats-create-members-list {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.group-chats-create-members-list-item {
+	margin: 0;
+	background: antiquewhite;
+	padding: 2px 7px;
+	border-radius: 5px;
+}
+
+.group-chats-create-members-list-item i {
+	font-size: 13px;
+	color: red;
+	cursor: pointer;
+}
+
+.group-chats-create-members-suggestion {
+	margin-bottom: 2px;
+	text-align: left;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.group-chats-create-members-suggestion:hover {
+	background-color: var(--primary-color);
+}
+
+.group-chats-create-submit {
+	width: 100%;
+}

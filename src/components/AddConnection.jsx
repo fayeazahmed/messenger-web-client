@@ -17,8 +17,8 @@ const AddConnection = () => {
             setConnectionRequests(connectionRequests);
         }
 
-        user && getConnectionRequests()
-    }, [user])
+        getConnectionRequests()
+    }, [])
 
     const searchUsers = async (e) => {
         if (e.target.value.length > 2) {

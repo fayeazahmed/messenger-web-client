@@ -8,7 +8,7 @@
 
 .inbox-messages {
 	flex-grow: 1;
-	max-height: 538px;
+	max-height: 691px;
 	overflow-y: scroll;
 }
 

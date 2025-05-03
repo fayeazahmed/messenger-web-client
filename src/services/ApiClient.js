@@ -98,6 +98,18 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async getGroupChats() {
+        const response = await this.client.get(`/chat/group`)
+        console.log(response);
+        return response.data.data
+    }
+
+    async createGroupChat(groupChatDto) {
+        const response = await this.client.post(`/chat/group`, groupChatDto)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');

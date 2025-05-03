@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../services/ApiClient"
 import AddConnection from './AddConnection';
 import { modifyConnectionListResponse } from '../utils/connectionUtils';
+import GroupChats from './GroupChats';
 
 const Connections = () => {
     const { user, setHeaderText, connections, setConnections } = useContext(Context);
@@ -25,11 +26,13 @@ const Connections = () => {
         }
     }, [user, navigate, getConnections, setHeaderText])
 
+    if (!user) return
     return (
         <div className="connections">
             {
                 connections.map((connection, index) => <Connection key={index} connection={connection} />)
             }
+            <GroupChats />
             <AddConnection />
         </div>
     )

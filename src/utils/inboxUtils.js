@@ -1,3 +1,4 @@
+import GroupMessage from '../components/GroupMessage.jsx';
 import Message from '../components/Message.jsx';
 import { getLastOnlineAt as getLastOnline, getReadMessageTimestamp } from './dateUtils.js';
 
@@ -68,6 +69,18 @@ function renderMessages(groupedMessages, recipient) {
         )) : <p className="inbox-nomessage">Start chatting with {recipient}</p>
 }
 
+function renderGroupMessages(groupedMessages) {
+    return Object.entries(groupedMessages).length > 0 ?
+        Object.keys(groupedMessages).map(date => (
+            <div key={date} className="inbox-messages-group-date">
+                <p className="inbox-messages-date">{date}</p>
+                {
+                    groupedMessages[date].map((message, index) => <GroupMessage key={index} message={message} isSender={message.isSender} sender={message.sender.username} readTimestamp={message.readTimestamp} />)
+                }
+            </div>
+        )) : <p className="inbox-nomessage">Start chatting</p>
+}
+
 function setMessageSeenTimestamp(messages, readMessage) {
     return messages.map(message => {
         if (message.id === readMessage.message.id) {
@@ -99,6 +112,7 @@ export {
     getHeaderTextComponent,
     buildNewMessage,
     renderMessages,
+    renderGroupMessages,
     setMessageSeenTimestamp,
     updateMessageSeenTimestamp
 }

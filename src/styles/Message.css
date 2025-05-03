@@ -56,3 +56,9 @@
 .read-message-timestamp:hover {
 	margin-right: 0;
 }
+
+.chat-sender {
+	font-size: 11px;
+	margin: 0;
+	text-align: left;
+}
