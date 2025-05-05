@@ -7,9 +7,9 @@ const GroupChat = ({ chat }) => {
     console.log(chat);
 
     return (
-        <div onClick={() => navigate("/group", { state: { chatId: chat.id } })} className={`connection`}>
+        <div onClick={() => navigate("/group", { state: { chatId: chat.id, title: chat.title } })} className={`connection`}>
             <div className="connection-dp me-3">
-                <i className="fa fa-user-circle-o" aria-hidden="true"></i>
+                <i className="fa fa-users" aria-hidden="true"></i>
             </div>
             <div className={`connection-title`}>
                 <div className="connection-user">{chat.title}</div>

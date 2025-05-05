@@ -2,7 +2,7 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 class StompClientHandler {
-    constructor(url, jwt, username, setNotifications, setNewMessages, setConnections, setReadMessageObj, setTypeMessageObj) {
+    constructor(url, jwt, username, setNotifications, setNewMessages, setConnections, setReadMessageObj, setTypeMessageObj, setTypeMessageGroupChatObj) {
         this.url = url;
         this.jwt = jwt
         this.username = username
@@ -12,11 +12,13 @@ class StompClientHandler {
         this.setConnections = setConnections
         this.setReadMessageObj = setReadMessageObj
         this.setTypeMessageObj = setTypeMessageObj
+        this.setTypeMessageGroupChatObj = setTypeMessageGroupChatObj
         this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
         this.handleOnlineNotification = this.handleOnlineNotification.bind(this);
         this.handleOfflineNotification = this.handleOfflineNotification.bind(this);
         this.handleReadMessage = this.handleReadMessage.bind(this);
         this.handleTypeMessage = this.handleTypeMessage.bind(this);
+        this.handleTypeMessageGroupChat = this.handleTypeMessageGroupChat.bind(this);
         this.handleSentMessage = this.handleSentMessage.bind(this);
     }
 
@@ -42,6 +44,10 @@ class StompClientHandler {
         this.client.send("/app/type-message", {}, JSON.stringify({ sender, recipient }))
     }
 
+    sendTypeMessageGroupChatNotification(sender, chatId) {
+        this.client.send("/app/type-message-group-chat", {}, JSON.stringify({ sender, chatId }))
+    }
+
     onConnected = (frame) => {
         this.client.subscribe(`/user/queue/sent-message`, this.handleSentMessage)
         this.client.subscribe(`/user/queue/reply`, this.handleIncomingMessage)
@@ -49,6 +55,7 @@ class StompClientHandler {
         this.client.subscribe(`/user/queue/user-offline`, this.handleOfflineNotification)
         this.client.subscribe(`/user/queue/read-message`, this.handleReadMessage)
         this.client.subscribe(`/user/queue/type-message`, this.handleTypeMessage)
+        this.client.subscribe(`/user/queue/type-message-group-chat`, this.handleTypeMessageGroupChat)
     }
 
     handleSentMessage(message) {
@@ -157,6 +164,13 @@ class StompClientHandler {
         console.log("Type message update: ");
         console.log(typeMessageObj);
         this.setTypeMessageObj(typeMessageObj)
+    }
+
+    handleTypeMessageGroupChat(message) {
+        const typeMessageGroupChatObj = JSON.parse(message.body)
+        console.log("Type message group chat update: ");
+        console.log(typeMessageGroupChatObj);
+        this.setTypeMessageGroupChatObj(typeMessageGroupChatObj)
     }
 
     onError = error => {

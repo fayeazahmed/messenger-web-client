@@ -11,8 +11,10 @@ function Provider({ children }) {
     const [headerText, setHeaderText] = useState("Home");
     const [readMessageObj, setReadMessageObj] = useState(null);
     const [typeMessageObj, setTypeMessageObj] = useState(null);
+    const [typeMessageGroupChatObj, setTypeMessageGroupChatObj] = useState(null);
     const [darkMode, setDarkMode] = useState(false)
     const [selectedConnectionInInbox, setSelectedConnectionInInbox] = useState(null);
+    const [selectedGroupChatInbox, setSelectedGroupChatInbox] = useState(null);
 
     return (
         <Context.Provider
@@ -33,10 +35,14 @@ function Provider({ children }) {
                 setReadMessageObj,
                 typeMessageObj,
                 setTypeMessageObj,
+                typeMessageGroupChatObj,
+                setTypeMessageGroupChatObj,
                 darkMode,
                 setDarkMode,
                 selectedConnectionInInbox,
-                setSelectedConnectionInInbox
+                setSelectedConnectionInInbox,
+                selectedGroupChatInbox,
+                setSelectedGroupChatInbox
             }}
         >
             {children}

@@ -11,7 +11,7 @@ const Inbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [messageInput, setMessageInput] = useState("");
     const [selectedConnection, setSelectedConnection] = useState(null);
-    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode, setSelectedConnectionInInbox } = useContext(Context);
+    const { user, stompClient, newMessages, setHeaderText, connections, typeMessageObj, setTypeMessageObj, readMessageObj, darkMode, setSelectedConnectionInInbox, setSelectedGroupChatInbox } = useContext(Context);
     const [recipient, setRecipient] = useState("")
     const [emojiPicker, setEmojiPicker] = useState(false);
     const navigate = useNavigate();
@@ -93,6 +93,7 @@ const Inbox = () => {
 
             setSelectedConnection(selectedConnection);
             setSelectedConnectionInInbox(selectedConnection)
+            setSelectedGroupChatInbox(null)
             const recipient = getRecipient(selectedConnection, user)
             setRecipient(recipient)
             const lastSeen = getLastOnlineAt(selectedConnection, user)
@@ -101,13 +102,7 @@ const Inbox = () => {
         }
     }
 
-    useEffect(updateConnection, [connections, state, state?.connectionId, user, navigate, setRecipient, setHeaderText, setSelectedConnectionInInbox])
-
-    useEffect(() => {
-        return () => {
-            setSelectedConnectionInInbox(null)
-        }
-    }, [setSelectedConnectionInInbox])
+    useEffect(updateConnection, [connections, state, state?.connectionId, user, navigate, setRecipient, setHeaderText, setSelectedConnectionInInbox, setSelectedGroupChatInbox])
 
     const sendMessage = () => {
         if (messageInput.trim()) {
