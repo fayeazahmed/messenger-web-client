@@ -7,7 +7,9 @@ function Provider({ children }) {
     const [notifications, setNotifications] = useState([]);
     const [stompClient, setStompClient] = useState(null);
     const [newMessages, setNewMessages] = useState([]);
+    const [newGroupMessages, setNewGroupMessages] = useState([]);
     const [connections, setConnections] = useState([]);
+    const [groupChats, setGroupChats] = useState([]);
     const [headerText, setHeaderText] = useState("Home");
     const [readMessageObj, setReadMessageObj] = useState(null);
     const [typeMessageObj, setTypeMessageObj] = useState(null);
@@ -27,10 +29,14 @@ function Provider({ children }) {
                 setStompClient,
                 newMessages,
                 setNewMessages,
+                newGroupMessages,
+                setNewGroupMessages,
                 headerText,
                 setHeaderText,
                 connections,
                 setConnections,
+                groupChats,
+                setGroupChats,
                 readMessageObj,
                 setReadMessageObj,
                 typeMessageObj,

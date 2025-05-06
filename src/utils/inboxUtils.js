@@ -13,8 +13,17 @@ function getNewMessages(newMessages, recipient) {
     const newMessageList = [];
     for (let i = 0; i < newMessages.length; i++) {
         if (!newMessages[i].isNotified && (newMessages[i].isSender || newMessages[i].sender === recipient)) {
-            newMessages[i].isNotified = true;
             newMessageList.push(newMessages[i]);
+        }
+    }
+    return newMessageList
+}
+
+function getNewGroupMessages(newGroupMessages, chatId) {
+    const newMessageList = [];
+    for (let i = 0; i < newGroupMessages.length; i++) {
+        if (!newGroupMessages[i].isNotified && newGroupMessages[i].chatId === chatId) {
+            newMessageList.push(newGroupMessages[i]);
         }
     }
     return newMessageList
@@ -75,7 +84,7 @@ function renderGroupMessages(groupedMessages) {
             <div key={date} className="inbox-messages-group-date">
                 <p className="inbox-messages-date">{date}</p>
                 {
-                    groupedMessages[date].map((message, index) => <GroupMessage key={index} message={message} isSender={message.isSender} sender={message.sender.username} readTimestamp={message.readTimestamp} />)
+                    groupedMessages[date].map((message, index) => <GroupMessage key={index} message={message} isSender={message.isSender} sender={message.sender?.username || message.sender} readTimestamp={message.readTimestamp} />)
                 }
             </div>
         )) : <p className="inbox-nomessage">Start chatting</p>
@@ -107,6 +116,7 @@ function updateMessageSeenTimestamp(groupedMessages, readMessage) {
 export {
     setMessageSender,
     getNewMessages,
+    getNewGroupMessages,
     getRecipient,
     getLastOnlineAt,
     getHeaderTextComponent,

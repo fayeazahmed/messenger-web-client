@@ -15,19 +15,37 @@ const Notification = () => {
 
         return () => clearInterval(interval);
     }, [notifications, setNotifications]);
+
+    const getComponent = (notification, index) => {
+        const style = { animationDelay: `${index * 0.5}s` }
+        const className = "notification fade-out"
+
+        if (notification.connectionId) {
+            return <Link
+                to="/inbox"
+                state={{ connectionId: notification.connectionId }}
+                key={index}
+                className={className}
+                style={style}
+            >
+                {notification.message}
+            </Link>
+        } else if (notification.chatId) {
+            return <Link
+                to="/group"
+                state={{ chatId: notification.chatId }}
+                key={index}
+                className={className}
+                style={style}
+            >
+                {notification.message}
+            </Link>
+        }
+    }
+
     return (
         <div className="notifications">
-            {notifications.map((notification, index) => {
-                return <Link
-                    to="/inbox"
-                    state={{ connectionId: notification.connectionId }}
-                    key={index}
-                    className="notification fade-out"
-                    style={{ animationDelay: `${index * 0.5}s` }}
-                >
-                    {notification.message}
-                </Link>
-            })}
+            {notifications.map((notification, index) => getComponent(notification, index))}
         </div>
     );
 };

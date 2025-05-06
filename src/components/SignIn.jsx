@@ -10,7 +10,7 @@ const SignIn = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [errMessage, setErrMessage] = useState("")
-    const { setUser, user, setStompClient, setNewMessages, setConnections, setNotifications, setReadMessageObj, setTypeMessageObj, setDarkMode, setTypeMessageGroupChatObj } = useContext(Context);
+    const { setUser, user, setStompClient, setNewMessages, setNewGroupMessages, setConnections, setGroupChats, setNotifications, setReadMessageObj, setTypeMessageObj, setDarkMode, setTypeMessageGroupChatObj } = useContext(Context);
     const navigate = useNavigate();
 
     const setTheme = useCallback(() => {
@@ -28,7 +28,9 @@ const SignIn = () => {
             username,
             setNotifications,
             setNewMessages,
+            setNewGroupMessages,
             setConnections,
+            setGroupChats,
             setReadMessageObj,
             setTypeMessageObj,
             setTypeMessageGroupChatObj
@@ -36,7 +38,7 @@ const SignIn = () => {
         stompClientInstance.connect()
         setStompClient(stompClientInstance)
         setUser(user)
-    }, [setNewMessages, setConnections, setStompClient, setUser, setNotifications, setReadMessageObj, setTypeMessageObj, setTypeMessageGroupChatObj])
+    }, [setNewMessages, setNewGroupMessages, setConnections, setGroupChats, setStompClient, setUser, setNotifications, setReadMessageObj, setTypeMessageObj, setTypeMessageGroupChatObj])
 
     const authenticateUser = useCallback(async () => {
         const jwt = localStorage.getItem("jwt")

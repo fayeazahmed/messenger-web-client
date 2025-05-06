@@ -5,13 +5,12 @@ import { Context } from '../services/Context';
 import GroupChat from './GroupChat';
 
 const GroupChats = () => {
-    const [groupChats, setGroupChats] = useState([])
     const [newGroupTitle, setNewGroupTitle] = useState("")
     const [newGroupMembers, setNewGroupMembers] = useState("")
     const [memberSuggestions, setMemberSuggestions] = useState([])
     const [selectedMembers, setSelectedMembers] = useState([])
     const [createPanel, setCreatePanel] = useState(false)
-    const { connections, user } = useContext(Context);
+    const { connections, user, groupChats, setGroupChats } = useContext(Context);
 
     const getGroupChats = useCallback(async () => {
         const groupChats = await apiClient.getGroupChats()

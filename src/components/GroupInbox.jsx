@@ -3,11 +3,11 @@ import { Context } from '../services/Context';
 import { groupMessages } from '../utils/dateUtils';
 import apiClient from '../services/ApiClient';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { renderGroupMessages, setMessageSender } from '../utils/inboxUtils';
+import { getNewGroupMessages, renderGroupMessages, setMessageSender } from '../utils/inboxUtils';
 import InboxInput from './InboxInput';
 
 const GroupInbox = () => {
-    const { user, darkMode, setHeaderText, stompClient, typeMessageGroupChatObj, setTypeMessageGroupChatObj, setSelectedConnectionInInbox, setSelectedGroupChatInbox } = useContext(Context);
+    const { user, darkMode, setHeaderText, stompClient, newGroupMessages, typeMessageGroupChatObj, setTypeMessageGroupChatObj, setSelectedConnectionInInbox, setSelectedGroupChatInbox } = useContext(Context);
     const location = useLocation();
     const navigate = useNavigate();
     const chatId = location.state?.chatId;
@@ -42,9 +42,50 @@ const GroupInbox = () => {
         }
     }, [user, getMessages, navigate, title, setHeaderText, chatId, setSelectedConnectionInInbox, setSelectedGroupChatInbox])
 
+    const renderNewMessage = () => {
+        const newMessageList = getNewGroupMessages(newGroupMessages, chatId)
+        console.log(newMessageList);
+
+        if (newMessageList.length > 0) {
+            // if (!newMessageList[newMessageList.length - 1].isSender) {
+            //     stompClient.sendReadMessageNotification(user.username, recipient, new Date(), selectedConnection?.chat?.id)
+            // }
+
+            setGroupedMessages(prev => {
+                const newGrouped = groupMessages(newMessageList);
+                const combinedGroupedMessages = { ...prev };
+                Object.keys(newGrouped).forEach(date => {
+                    if (!combinedGroupedMessages[date]) {
+                        combinedGroupedMessages[date] = [];
+                    }
+                    combinedGroupedMessages[date] = [
+                        ...combinedGroupedMessages[date],
+                        ...newGrouped[date]
+                    ];
+                });
+
+                return combinedGroupedMessages;
+            });
+
+        }
+    }
+
+    useEffect(renderNewMessage, [newGroupMessages, chatId]);
+
+    const scrollToBottom = () => {
+        if (Object.entries(groupedMessages).length > 0) {
+            const msgContainer = messagesContainerRef.current;
+            if (msgContainer) {
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+            }
+        }
+    }
+
+    useEffect(scrollToBottom, [groupedMessages])
+
     const handleMessageInputChange = (e) => {
         if (e.key === "Enter" && !e.shiftKey && e.target.value.trim()) {
-            // sendMessage();
+            sendMessage();
             e.preventDefault()
         } else {
             stompClient.sendTypeMessageGroupChatNotification(user.username, chatId)
@@ -54,8 +95,8 @@ const GroupInbox = () => {
     const sendMessage = () => {
         if (messageInput.trim()) {
             setEmojiPicker(false)
-            // stompClient.sendMessage(user.username, recipient, messageInput, selectedConnection);
-            // setMessageInput("");
+            stompClient.sendMessageToGroupChat(user.username, chatId, messageInput);
+            setMessageInput("");
         }
     };
 
@@ -87,7 +128,7 @@ const GroupInbox = () => {
             </div>
             <div className="inbox-message-type-container">
                 {
-                    typeMessageGroupChatObj?.chatId === chatId && `${typeMessageGroupChatObj.sender} is typing...`
+                    typeMessageGroupChatObj?.chatId === chatId && `${typeMessageGroupChatObj?.sender} is typing...`
                 }
             </div>
             {

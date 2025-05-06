@@ -85,6 +85,7 @@ const ConnectionSettings = () => {
         }
     }
 
+    if (!user) return
     if (selectedConnectionInInbox) {
         return (
             <div className="connection-settings p-3">
@@ -131,7 +132,7 @@ const ConnectionSettings = () => {
             <div className="connection-settings p-3">
                 <div className="group-settings-title d-flex align-items-center">
                     <input
-                        className="signin-input"
+                        className={`signin-input ${darkMode ? "group-title-input-dark" : ""}`}
                         type="text"
                         placeholder="Group title"
                         value={groupTitle}
@@ -139,7 +140,10 @@ const ConnectionSettings = () => {
                         onKeyDown={handleGroupTitleChange}
                         disabled={groupTitleDisabled}
                     />
-                    <button onClick={handleGroupTitleButtonClicked} className="btn btn-sm btn-dark ms-2"><i className="fa fa-pencil" aria-hidden="true"></i></button>
+                    {
+                        user.username === groupChat.admin.username &&
+                        <button onClick={handleGroupTitleButtonClicked} className="btn btn-sm btn-dark ms-2"><i className="fa fa-pencil" aria-hidden="true"></i></button>
+                    }
                 </div>
             </div>
         );

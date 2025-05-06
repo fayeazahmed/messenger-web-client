@@ -41,3 +41,7 @@
 .delete-connection button {
 	width: 165px;
 }
+
+.group-title-input-dark:disabled {
+	color: white;
+}

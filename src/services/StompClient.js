@@ -2,24 +2,28 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 class StompClientHandler {
-    constructor(url, jwt, username, setNotifications, setNewMessages, setConnections, setReadMessageObj, setTypeMessageObj, setTypeMessageGroupChatObj) {
+    constructor(url, jwt, username, setNotifications, setNewMessages, setNewGroupMessages, setConnections, setGroupChats, setReadMessageObj, setTypeMessageObj, setTypeMessageGroupChatObj) {
         this.url = url;
         this.jwt = jwt
         this.username = username
         this.setNotifications = setNotifications
         this.setNewMessages = setNewMessages;
+        this.setNewGroupMessages = setNewGroupMessages;
         this.client = null;
         this.setConnections = setConnections
+        this.setGroupChats = setGroupChats
         this.setReadMessageObj = setReadMessageObj
         this.setTypeMessageObj = setTypeMessageObj
         this.setTypeMessageGroupChatObj = setTypeMessageGroupChatObj
         this.handleIncomingMessage = this.handleIncomingMessage.bind(this);
+        this.handleIncomingGroupMessage = this.handleIncomingGroupMessage.bind(this);
         this.handleOnlineNotification = this.handleOnlineNotification.bind(this);
         this.handleOfflineNotification = this.handleOfflineNotification.bind(this);
         this.handleReadMessage = this.handleReadMessage.bind(this);
         this.handleTypeMessage = this.handleTypeMessage.bind(this);
         this.handleTypeMessageGroupChat = this.handleTypeMessageGroupChat.bind(this);
         this.handleSentMessage = this.handleSentMessage.bind(this);
+        this.handleSentMessageToGroup = this.handleSentMessageToGroup.bind(this);
     }
 
     connect() {
@@ -36,6 +40,10 @@ class StompClientHandler {
         this.client.send("/app/chat", {}, JSON.stringify({ text, recipient, sender, connection }))
     }
 
+    sendMessageToGroupChat(sender, chatId, text) {
+        this.client.send("/app/group-chat", {}, JSON.stringify({ sender, chatId, text }))
+    }
+
     sendReadMessageNotification(sender, recipient, readAt, chatId) {
         this.client.send("/app/read-message", {}, JSON.stringify({ sender, recipient, readAt, chatId }))
     }
@@ -50,7 +58,9 @@ class StompClientHandler {
 
     onConnected = (frame) => {
         this.client.subscribe(`/user/queue/sent-message`, this.handleSentMessage)
+        this.client.subscribe(`/user/queue/sent-message-group`, this.handleSentMessageToGroup)
         this.client.subscribe(`/user/queue/reply`, this.handleIncomingMessage)
+        this.client.subscribe(`/user/queue/group-reply`, this.handleIncomingGroupMessage)
         this.client.subscribe(`/user/queue/user-online`, this.handleOnlineNotification)
         this.client.subscribe(`/user/queue/user-offline`, this.handleOfflineNotification)
         this.client.subscribe(`/user/queue/read-message`, this.handleReadMessage)
@@ -73,6 +83,25 @@ class StompClientHandler {
                 return { ...connection, lastMessage: (newMessage.sender.username + ": " + newMessage.text), isUnread: false };
             }
             return connection;
+        })
+        );
+    }
+
+    handleSentMessageToGroup(message) {
+        let newGroupMessage = JSON.parse(message.body)
+        console.log("Sent group message:");
+        console.log(newGroupMessage);
+        newGroupMessage = {
+            ...newGroupMessage,
+            isSender: true,
+            isNotified: false
+        }
+        this.setNewGroupMessages(messages => [...messages, newGroupMessage])
+        this.setGroupChats(chats => chats.map(chat => {
+            if (chat.id === newGroupMessage.id) {
+                return { ...chat, lastMessage: ("You: " + newGroupMessage.text) };
+            }
+            return chats;
         })
         );
     }
@@ -100,6 +129,31 @@ class StompClientHandler {
             return connection;
         })
         );
+    }
+
+    handleIncomingGroupMessage(message) {
+        let newGroupMessage = JSON.parse(message.body)
+        console.log("Incoming group message:");
+        console.log(newGroupMessage);
+        newGroupMessage = {
+            ...newGroupMessage,
+            isSender: false,
+            isNotified: false
+        }
+        this.setNotifications(prev => [...prev,
+        {
+            message: `@${newGroupMessage.sender}: ${newGroupMessage.text}`,
+            chatId: newGroupMessage.chatId
+        }
+        ])
+        this.setNewGroupMessages(messages => [...messages, newGroupMessage])
+        this.setGroupChats(chats => chats.map(chat => {
+            if (chat.id === newGroupMessage.chatId) {
+                return { ...chat, unread: true, lastMessage: newGroupMessage.sender + ": " + newGroupMessage.text };
+            }
+            return chat;
+        }));
+
     }
 
     handleOnlineNotification(message) {
