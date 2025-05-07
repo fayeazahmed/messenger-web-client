@@ -45,3 +45,16 @@
 .group-title-input-dark:disabled {
 	color: white;
 }
+
+.group-chats-settings-members-list {
+	flex-direction: column;
+	width: 50%;
+	margin-top: 10px;
+}
+
+.group-chats-update-message {
+	margin: 5px;
+	font-size: 12px;
+	text-align: left;
+	color: red;
+}

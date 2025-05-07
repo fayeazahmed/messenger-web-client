@@ -24,6 +24,11 @@ const ConnectionSettings = () => {
         useState(false);
     const [groupTitle, setGroupTitle] = useState("");
     const [groupTitleDisabled, setGroupTitleDisabled] = useState(true);
+    const [groupMembers, setGroupMembers] = useState([])
+    const [newGroupMembers, setNewGroupMembers] = useState("")
+    const [memberSuggestions, setMemberSuggestions] = useState([])
+    const [selectedMembers, setSelectedMembers] = useState([])
+    const [groupChatUpdateMessage, setGroupChatUpdateMessage] = useState("")
 
     const getSettings = useCallback(async () => {
         if (!user || (!selectedConnectionInInbox && !selectedGroupChatInbox)) {
@@ -39,6 +44,8 @@ const ConnectionSettings = () => {
             const chat = await apiClient.getChat(selectedGroupChatInbox);
             setGroupChat(chat)
             setGroupTitle(chat.title)
+            const members = chat.users.filter(u => u.username !== user.username)
+            setGroupMembers(members.map(member => member.username))
         }
     }, [
         user,
@@ -82,6 +89,39 @@ const ConnectionSettings = () => {
                 await apiClient.updateGroupChatSettings(settings)
                 setHeaderText(title)
             }
+        }
+    }
+
+    const showAddMemberSuggestion = e => {
+        const username = e.target.value
+        setNewGroupMembers(username)
+        if (username.trim()) {
+            const connectionList = connections.map(connection => connection.sender.username === user.username ? connection.receiver.username : connection.sender.username)
+            const suggestedUsers = connectionList.filter(user => user.includes(username) && !selectedMembers.includes(user))
+            setMemberSuggestions(suggestedUsers)
+        } else {
+            setMemberSuggestions([])
+        }
+    }
+
+    const addMember = username => {
+        setSelectedMembers([...selectedMembers, username])
+        setNewGroupMembers("")
+        setMemberSuggestions([])
+    }
+
+    const removeMember = async (username) => {
+        try {
+            const usernames = groupMembers.filter(user => user !== username)
+            await apiClient.updateGroupChatSettings({
+                chatId: selectedGroupChatInbox,
+                title: groupTitle,
+                usernames
+            })
+            setGroupMembers(usernames)
+        } catch (e) {
+            console.log(e);
+            setGroupChatUpdateMessage(e.response?.data?.message)
         }
     }
 
@@ -143,6 +183,21 @@ const ConnectionSettings = () => {
                     {
                         user.username === groupChat.admin.username &&
                         <button onClick={handleGroupTitleButtonClicked} className="btn btn-sm btn-dark ms-2"><i className="fa fa-pencil" aria-hidden="true"></i></button>
+                    }
+                </div>
+                <div className="group-settings-members">
+                    <div className="group-chats-create-members-list group-chats-settings-members-list">
+                        {
+                            groupMembers.map((member, i) => <div key={i} className="group-chats-create-members-list-item text-start">
+                                @{member} {user.username === groupChat.admin.username &&
+                                    <i onClick={() => removeMember(member)} className="fa fa-minus-circle" aria-hidden="true"></i>}
+                            </div>)
+                        }
+                    </div>
+                    <div className="group-chats-update-message">{groupChatUpdateMessage}</div>
+                    <input className="group-chats-create-members" type="text" placeholder="Add new members" value={newGroupMembers} onChange={showAddMemberSuggestion} />
+                    {
+                        memberSuggestions.map((member, i) => <p key={i} onClick={() => addMember(member)} className="group-chats-create-members-suggestion">@{member}</p>)
                     }
                 </div>
             </div>
