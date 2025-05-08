@@ -27,7 +27,6 @@ const ConnectionSettings = () => {
     const [groupMembers, setGroupMembers] = useState([])
     const [newGroupMembers, setNewGroupMembers] = useState("")
     const [memberSuggestions, setMemberSuggestions] = useState([])
-    const [selectedMembers, setSelectedMembers] = useState([])
     const [groupChatUpdateMessage, setGroupChatUpdateMessage] = useState("")
 
     const getSettings = useCallback(async () => {
@@ -97,17 +96,28 @@ const ConnectionSettings = () => {
         setNewGroupMembers(username)
         if (username.trim()) {
             const connectionList = connections.map(connection => connection.sender.username === user.username ? connection.receiver.username : connection.sender.username)
-            const suggestedUsers = connectionList.filter(user => user.includes(username) && !selectedMembers.includes(user))
+            const suggestedUsers = connectionList.filter(user => user.includes(username) && !groupMembers.includes(user))
             setMemberSuggestions(suggestedUsers)
         } else {
             setMemberSuggestions([])
         }
     }
 
-    const addMember = username => {
-        setSelectedMembers([...selectedMembers, username])
-        setNewGroupMembers("")
-        setMemberSuggestions([])
+    const addMember = async (username) => {
+        try {
+            const usernames = [...groupMembers, username]
+            await apiClient.updateGroupChatSettings({
+                chatId: selectedGroupChatInbox,
+                title: groupTitle,
+                usernames
+            })
+            setGroupMembers(usernames)
+            setNewGroupMembers("")
+            setMemberSuggestions([])
+        } catch (e) {
+            console.log(e);
+            setGroupChatUpdateMessage(e.response?.data?.message)
+        }
     }
 
     const removeMember = async (username) => {
@@ -195,7 +205,10 @@ const ConnectionSettings = () => {
                         }
                     </div>
                     <div className="group-chats-update-message">{groupChatUpdateMessage}</div>
-                    <input className="group-chats-create-members" type="text" placeholder="Add new members" value={newGroupMembers} onChange={showAddMemberSuggestion} />
+                    {
+                        user.username === groupChat.admin.username &&
+                        <input className="group-chats-create-members" type="text" placeholder="Add new members" value={newGroupMembers} onChange={showAddMemberSuggestion} />
+                    }
                     {
                         memberSuggestions.map((member, i) => <p key={i} onClick={() => addMember(member)} className="group-chats-create-members-suggestion">@{member}</p>)
                     }
