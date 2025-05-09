@@ -65,7 +65,7 @@ const GroupChats = () => {
         <div className="group-chats">
             <p className="group-chats-header">Group Chats</p>
             {
-                groupChats.map(chat => <GroupChat key={chat.id} chat={chat} />)
+                groupChats.map((chat, index) => <GroupChat key={index} chat={chat} />)
             }
             <div className="my-2 text-start">
                 <button className="btn btn-sm btn-primary" onClick={() => setCreatePanel(!createPanel)}>+ Create New</button>

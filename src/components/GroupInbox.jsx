@@ -17,8 +17,11 @@ const GroupInbox = () => {
     const [groupedMessages, setGroupedMessages] = useState({});
     const [emojiPicker, setEmojiPicker] = useState(false);
     const [messageInput, setMessageInput] = useState("");
+    const [selectedTheme, setSelectedTheme] = useState(0);
 
     const getMessages = useCallback(async () => {
+        const chat = await apiClient.getChat(chatId)
+        setSelectedTheme(chat.theme)
         const messageList = await apiClient.getMessages(chatId);
         const messages = setMessageSender(messageList, user)
         const groupedMessages = groupMessages(messages)
@@ -47,10 +50,6 @@ const GroupInbox = () => {
         console.log(newMessageList);
 
         if (newMessageList.length > 0) {
-            // if (!newMessageList[newMessageList.length - 1].isSender) {
-            //     stompClient.sendReadMessageNotification(user.username, recipient, new Date(), selectedConnection?.chat?.id)
-            // }
-
             setGroupedMessages(prev => {
                 const newGrouped = groupMessages(newMessageList);
                 const combinedGroupedMessages = { ...prev };
@@ -115,8 +114,10 @@ const GroupInbox = () => {
     useEffect(handleTypeMessage, [typeMessageGroupChatObj, setTypeMessageGroupChatObj, chatId])
 
     const getBgImageStyle = () => {
+        if (selectedTheme === 0) return {}
 
-        return {}
+        const imageUrl = require(`../images/${selectedTheme}.jpg`)
+        return { backgroundImage: `url(${imageUrl})` }
     }
 
     return (

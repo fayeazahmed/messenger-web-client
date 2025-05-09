@@ -9,25 +9,49 @@ import apiClient from '../services/ApiClient';
 
 const bgImages = [bgImage0, bgImage1, bgImage2, bgImage3, bgImage4];
 
-const InboxThemes = ({ connectionId, selectedTheme }) => {
+const InboxThemes = ({ connection, groupChatId, selectedTheme }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const { setConnections } = useContext(Context);
 
     useEffect(() => setSelectedIndex(selectedTheme), [selectedTheme])
 
     const updateTheme = async (index) => {
-        try {
-            await apiClient.updateConnectionTheme(connectionId, index)
-            setSelectedIndex(index)
-            setConnections(connections => connections.map(connection => {
-                if (connection.id === connectionId) {
-                    return { ...connection, inboxTheme: index };
-                }
-                return connection;
-            })
-            );
-        } catch (error) {
-            console.log(error);
+        if (connection) {
+            try {
+                await apiClient.updateChatSettings({
+                    id: connection.chat.id,
+                    theme: index
+                })
+                setSelectedIndex(index)
+                setConnections(connections => connections.map(conn => {
+                    if (conn.id === connection.id) {
+                        return {
+                            ...conn, chat: {
+                                ...conn.chat,
+                                theme: index
+                            }
+                        };
+                    }
+                    return conn
+                })
+                );
+            } catch (error) {
+                console.log(error);
+            }
+        } else if (groupChatId) {
+            try {
+                await apiClient.updateChatSettings({
+                    id: groupChatId,
+                    theme: index
+                })
+                setSelectedIndex(index)
+
+
+
+
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 

@@ -161,8 +161,8 @@ const ConnectionSettings = () => {
                 <div className="connection-settings-details">
                     {themesSelected && (
                         <InboxThemes
-                            connectionId={connection.id}
-                            selectedTheme={connection.inboxTheme}
+                            connection={connection}
+                            selectedTheme={connection.chat.theme}
                         />
                     )}
                     {deleteConnectionSelected && (
@@ -212,6 +212,26 @@ const ConnectionSettings = () => {
                     {
                         memberSuggestions.map((member, i) => <p key={i} onClick={() => addMember(member)} className="group-chats-create-members-suggestion">@{member}</p>)
                     }
+                </div>
+                <div
+                    className={`mt-2 connection-settings-button-container ${darkMode ? "connection-settings-button-container-dark" : ""
+                        }`}
+                    onClick={() => {
+                        setDeleteConnectionSelected(false);
+                        setThemesSelected(!themesSelected);
+                    }}
+                >
+                    <i className="fa fa-picture-o me-2" aria-hidden="true"></i>
+                    Change theme
+                </div>
+                <div className="connection-settings-details">
+                    {themesSelected && (
+                        <InboxThemes
+                            connection={null}
+                            groupChatId={selectedGroupChatInbox}
+                            selectedTheme={selectedGroupChatInbox.theme}
+                        />
+                    )}
                 </div>
             </div>
         );

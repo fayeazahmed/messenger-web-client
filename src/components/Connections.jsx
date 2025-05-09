@@ -11,6 +11,8 @@ const Connections = () => {
     const { user, setHeaderText, connections, setConnections } = useContext(Context);
     const navigate = useNavigate();
 
+    console.log(connections);
+
     const getConnections = useCallback(async () => {
         const connectionListResponse = await apiClient.getConnections()
         const connections = modifyConnectionListResponse(connectionListResponse)

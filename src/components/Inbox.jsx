@@ -151,9 +151,9 @@ const Inbox = () => {
     }, [handleReadMessageUpdate])
 
     const getBgImageStyle = () => {
-        if (selectedConnection.inboxTheme === 0) return {}
+        if (selectedConnection.chat.theme === 0) return {}
 
-        const imageUrl = require(`../images/${selectedConnection.inboxTheme}.jpg`)
+        const imageUrl = require(`../images/${selectedConnection.chat.theme}.jpg`)
         return { backgroundImage: `url(${imageUrl})` }
     }
 
