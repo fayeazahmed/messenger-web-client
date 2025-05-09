@@ -224,12 +224,28 @@ const ConnectionSettings = () => {
                     <i className="fa fa-picture-o me-2" aria-hidden="true"></i>
                     Change theme
                 </div>
+                <div
+                    className={`connection-settings-button-container ${darkMode ? "connection-settings-button-container-dark" : ""
+                        }`}
+                    onClick={() => {
+                        setThemesSelected(false);
+                        setDeleteConnectionSelected(!deleteConnectionSelected);
+                    }}
+                >
+                    <i className="fa fa-user-times me-2" aria-hidden="true"></i>
+                    Leave Group
+                </div>
                 <div className="connection-settings-details">
                     {themesSelected && (
                         <InboxThemes
-                            connection={null}
                             groupChatId={selectedGroupChatInbox}
-                            selectedTheme={selectedGroupChatInbox.theme}
+                            selectedTheme={groupChat.theme}
+                        />
+                    )}
+                    {deleteConnectionSelected && (
+                        <DeleteConnection
+                            chatId={groupChat.id}
+                            setDeleteConnectionSelected={setDeleteConnectionSelected}
                         />
                     )}
                 </div>

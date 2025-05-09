@@ -122,6 +122,12 @@ class ApiClient {
         console.log(response);
         return response.data.data
     }
+
+    async leaveGroupChat(chatId) {
+        const response = await this.client.put(`/chat/group/leave/${chatId}`)
+        console.log(response);
+        return response.data.data
+    }
 }
 
 const apiClient = new ApiClient('http://localhost:8080');
