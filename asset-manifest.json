@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/messenger-web-client/static/css/main.34172ec5.css",
+    "main.js": "/messenger-web-client/static/js/main.eb1a459a.js",
+    "static/media/2.jpg": "/messenger-web-client/static/media/2.42f928be85b1d6701623.jpg",
+    "static/media/4.jpg": "/messenger-web-client/static/media/4.8a89f18c95c2d6c9fa16.jpg",
+    "static/media/1.jpg": "/messenger-web-client/static/media/1.a569b31f1995ef985b8a.jpg",
+    "static/media/3.jpg": "/messenger-web-client/static/media/3.d9f38fb6b4a569f49384.jpg",
+    "index.html": "/messenger-web-client/index.html",
+    "main.34172ec5.css.map": "/messenger-web-client/static/css/main.34172ec5.css.map",
+    "main.eb1a459a.js.map": "/messenger-web-client/static/js/main.eb1a459a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.34172ec5.css",
+    "static/js/main.eb1a459a.js"
+  ]
+}
