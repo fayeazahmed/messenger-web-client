@@ -49,11 +49,11 @@ class StompClientHandler {
     }
 
     sendTypeMessageNotification(sender, recipient) {
-        this.client.send("/app/type-message", {}, JSON.stringify({ sender, recipient }))
+        // this.client.send("/app/type-message", {}, JSON.stringify({ sender, recipient }))
     }
 
     sendTypeMessageGroupChatNotification(sender, chatId) {
-        this.client.send("/app/type-message-group-chat", {}, JSON.stringify({ sender, chatId }))
+        // this.client.send("/app/type-message-group-chat", {}, JSON.stringify({ sender, chatId }))
     }
 
     onConnected = (frame) => {

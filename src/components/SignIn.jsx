@@ -23,7 +23,7 @@ const SignIn = () => {
     const finishSignIn = useCallback((jwt, username, user) => {
         apiClient.setAuthorizationHeader(jwt)
         const stompClientInstance = new StompClient(
-            "http://localhost:8080/ws",
+            "https://allin1-messenger.onrender.com/ws",
             jwt,
             username,
             setNotifications,

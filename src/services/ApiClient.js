@@ -130,5 +130,5 @@ class ApiClient {
     }
 }
 
-const apiClient = new ApiClient('http://localhost:8080');
+const apiClient = new ApiClient('https://allin1-messenger.onrender.com');
 export default apiClient;
